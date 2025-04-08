@@ -14,9 +14,9 @@ public class PostController {
         this.postService = postService;
     }
 
-    public void createPost(String title){
+    public boolean createPost(String title){
         PostRequest postRequest = new PostRequest(title);
-        postService.createPost(postRequest);
+        return postService.createPost(postRequest);
     }
 
     public List<Post> getAllPosts(){

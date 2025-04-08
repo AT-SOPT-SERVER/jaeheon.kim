@@ -3,6 +3,7 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
 import org.sopt.repository.PostRepository;
+import org.sopt.validator.PostValidator;
 
 import java.util.List;
 
@@ -14,8 +15,14 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public void createPost(PostRequest postRequest){
+    public boolean createPost(PostRequest postRequest){
+
+        if (!PostValidator.isValid(postRequest)){
+            return false;
+        }
+
         postRepository.save(postRequest);
+        return true;
     }
 
     public List<Post> getAllPosts(){

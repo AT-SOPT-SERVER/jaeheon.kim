@@ -27,8 +27,11 @@ public class Main {
                     System.out.println("\n📝 [게시글 작성]");
                     System.out.print("📌 제목을 입력해주세요: ");
                     String title = scanner.nextLine();
-                    controller.createPost(title);
-                    System.out.println("✅ 게시글이 성공적으로 저장되었습니다!");
+                    if ( controller.createPost(title)){
+                        System.out.println("✅ 게시글이 성공적으로 저장되었습니다!");
+                    }else {
+                        System.out.println("❌ 게시글 저장에 실패했습니다. 게시글 길이, 중복 여부 등을 확인해주세요.");
+                    }
                     break;
 
                 case "2":
