@@ -2,40 +2,46 @@ package org.sopt.repository;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
+import org.sopt.dto.request.PostUpdateRequest;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PostRepository {
 
-    public List<Post> postList = new ArrayList<>();
+    public Map<Long, Post> postMap = new HashMap<>();
     private final AtomicLong autoIncrement = new AtomicLong(0);
 
     public void save(PostRequest postRequest){
         Long newId = autoIncrement.getAndIncrement();
-        postList.add(new Post(newId, postRequest.getTitle()));
+        postMap.put(newId, new Post(newId, postRequest.getTitle()));
     }
 
     public List<Post> findAll(){
-        return this.postList;
+        return postMap.values()
+                .stream()
+                .toList();
     }
 
     public Post findPostById(Long id){
-        return this.postList.stream()
-                .filter(post -> post.getId() == id)
-                .findFirst()
-                .orElseGet(null);
+        return this.postMap.get(id);
     }
 
     public boolean deletePostById(Long id){
-        Optional<Post> post = this.postList.stream()
-                .filter(p -> p.getId() == id)
-                .findFirst();
-
-        if(post.isEmpty()){
+        Post post = postMap.remove(id);
+        if(post == null){
             return false;
         }
-        this.postList.remove(post.get());
+        return true;
+    }
+
+    public boolean updatePostTitle(PostUpdateRequest postUpdateRequest){
+        Long id = postUpdateRequest.getId();
+        Post post = findPostById(id);
+        if (post == null){
+            return false;
+        }
+        postMap.put(id, post.updateTitle(postUpdateRequest.getTitle()));
         return true;
     }
 }

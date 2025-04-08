@@ -2,6 +2,7 @@ package org.sopt.service;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
+import org.sopt.dto.request.PostUpdateRequest;
 import org.sopt.repository.PostRepository;
 import org.sopt.validator.PostValidator;
 
@@ -16,8 +17,7 @@ public class PostService {
     }
 
     public boolean createPost(PostRequest postRequest){
-
-        if (!PostValidator.isValid(postRequest)){
+        if (!PostValidator.isValidTitle(postRequest.getTitle())){
             return false;
         }
 
@@ -35,5 +35,12 @@ public class PostService {
 
     public boolean deletePostById(Long id){
         return postRepository.deletePostById(id);
+    }
+
+    public boolean updatePostTitle(PostUpdateRequest request){
+        if (!PostValidator.isValidTitle(request.getTitle())){
+            return false;
+        }
+        return postRepository.updatePostTitle(request);
     }
 }

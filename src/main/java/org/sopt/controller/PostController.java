@@ -2,6 +2,7 @@ package org.sopt.controller;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
+import org.sopt.dto.request.PostUpdateRequest;
 import org.sopt.service.PostService;
 
 import java.util.List;
@@ -29,5 +30,10 @@ public class PostController {
 
     public boolean deletePostById(Long id){
         return postService.deletePostById(id);
+    }
+
+    public boolean updatePostTitle(Long id, String title){
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest(id, title);
+        return postService.updatePostTitle(postUpdateRequest);
     }
 }
