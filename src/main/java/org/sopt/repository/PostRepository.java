@@ -4,44 +4,12 @@ import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
 import org.sopt.dto.request.PostUpdateRequest;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
 
-public class PostRepository {
-
-    public Map<Long, Post> postMap = new HashMap<>();
-    private final AtomicLong autoIncrement = new AtomicLong(0);
-
-    public void save(PostRequest postRequest){
-        Long newId = autoIncrement.getAndIncrement();
-        postMap.put(newId, new Post(newId, postRequest.getTitle()));
-    }
-
-    public List<Post> findAll(){
-        return postMap.values()
-                .stream()
-                .toList();
-    }
-
-    public Post findPostById(Long id){
-        return this.postMap.get(id);
-    }
-
-    public boolean deletePostById(Long id){
-        Post post = postMap.remove(id);
-        if(post == null){
-            return false;
-        }
-        return true;
-    }
-
-    public boolean updatePostTitle(PostUpdateRequest postUpdateRequest){
-        Long id = postUpdateRequest.getId();
-        Post post = findPostById(id);
-        if (post == null){
-            return false;
-        }
-        postMap.put(id, post.updateTitle(postUpdateRequest.getTitle()));
-        return true;
-    }
+public interface PostRepository {
+    public void save(PostRequest postRequest);
+    public List<Post> findAll();
+    public Post findPostById(Long id);
+    public boolean deletePostById(Long id);
+    public boolean updatePostTitle(PostUpdateRequest postUpdateRequest);
 }

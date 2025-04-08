@@ -3,6 +3,7 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
 import org.sopt.dto.request.PostUpdateRequest;
+import org.sopt.repository.PostInMemoryRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.validator.PostValidator;
 
@@ -30,6 +31,7 @@ public class PostService {
     }
 
     public Post getPost(Long id){
+        System.out.println(postRepository.findPostById(id).getTitle().length());
         return postRepository.findPostById(id);
     }
 

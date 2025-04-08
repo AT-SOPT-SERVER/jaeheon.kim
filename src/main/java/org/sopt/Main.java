@@ -1,17 +1,15 @@
 package org.sopt;
 
 
-import java.util.List;
 import java.util.Scanner;
+import org.sopt.config.PostConfig;
 import org.sopt.controller.PostController;
 import org.sopt.domain.Post;
-import org.sopt.repository.PostRepository;
-import org.sopt.service.PostService;
 
 public class Main {
     public static void main(String[] args) {
 
-        PostController controller = configPostController();
+        PostController controller = PostConfig.configPostController();
 
         Scanner scanner = new Scanner(System.in);
         printWelcome();
@@ -126,11 +124,5 @@ public class Main {
         System.out.println("=====================================");
     }
 
-    private static PostController configPostController(){
-        PostRepository postRepository = new PostRepository();
-        PostService postService = new PostService(postRepository);
-        PostController controller = new PostController(postService);
-        return controller;
-    }
 }
 
