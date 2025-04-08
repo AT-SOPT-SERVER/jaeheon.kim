@@ -21,11 +21,11 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Post getPost(int id){
+    public Post getPost(Long id){
         return postRepository.findPostById(id);
     }
 
-    public boolean deletePostById(int id){
+    public boolean deletePostById(Long id){
         return postRepository.deletePostById(id);
     }
 }

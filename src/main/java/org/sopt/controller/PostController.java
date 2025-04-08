@@ -5,10 +5,11 @@ import org.sopt.service.PostService;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PostController {
 
-    private final AtomicInteger autoIncrement = new AtomicInteger(0);
+    private final AtomicLong autoIncrement = new AtomicLong(0);
     private final PostService postService;
 
     public PostController(PostService postService){
@@ -17,7 +18,7 @@ public class PostController {
 
     public void createPost(String title){
         //혹은 synchronized 블럭이나 메서드
-        int newId = autoIncrement.getAndIncrement();
+        Long newId = autoIncrement.getAndIncrement();
         postService.createPost(new Post(newId, title));
     }
 
@@ -25,11 +26,11 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-    public Post getPostById(int id){
+    public Post getPostById(Long id){
         return postService.getPost(id);
     }
 
-    public boolean deletePostById(int id){
+    public boolean deletePostById(Long id){
         return postService.deletePostById(id);
     }
 }

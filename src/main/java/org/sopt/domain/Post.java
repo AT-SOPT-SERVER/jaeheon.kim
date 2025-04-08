@@ -1,15 +1,15 @@
 package org.sopt.domain;
 
 public class Post {
-    private int id;
+    private Long id;
     private String title;
 
-    public Post(int id, String title){
+    public Post(Long id, String title){
         this.id = id;
         this.title = title;
     }
 
-    public int getId() {
+    public Long getId() {
         return this.id;
     }
 
