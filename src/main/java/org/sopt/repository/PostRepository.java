@@ -1,17 +1,19 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.request.PostRequest;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PostRepository {
 
     public List<Post> postList = new ArrayList<>();
+    private final AtomicLong autoIncrement = new AtomicLong(0);
 
-    public Map<Long, Post> postMap = new HashMap<>();
-
-    public void save(Post post){
-        postList.add(post);
+    public void save(PostRequest postRequest){
+        Long newId = autoIncrement.getAndIncrement();
+        postList.add(new Post(newId, postRequest.getTitle()));
     }
 
     public List<Post> findAll(){

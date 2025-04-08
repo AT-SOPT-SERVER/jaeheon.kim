@@ -1,6 +1,7 @@
 package org.sopt.service;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.request.PostRequest;
 import org.sopt.repository.PostRepository;
 
 import java.util.List;
@@ -13,8 +14,8 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public void createPost(Post post){
-        postRepository.save(post);
+    public void createPost(PostRequest postRequest){
+        postRepository.save(postRequest);
     }
 
     public List<Post> getAllPosts(){
