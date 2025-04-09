@@ -44,4 +44,8 @@ public class PostService {
         }
         return postRepository.updatePostTitle(request);
     }
+
+    public List<Post> searchPostsByKeyword(String keyword){
+        return postRepository.findAllByKeyword(keyword);
+    }
 }

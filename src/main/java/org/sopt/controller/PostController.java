@@ -36,4 +36,8 @@ public class PostController {
         PostUpdateRequest postUpdateRequest = new PostUpdateRequest(id, title);
         return postService.updatePostTitle(postUpdateRequest);
     }
+
+    public List<Post> searchPostsByKeyword(String keyword){
+        return postService.searchPostsByKeyword(keyword);
+    }
 }

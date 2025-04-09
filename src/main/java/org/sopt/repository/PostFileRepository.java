@@ -97,6 +97,13 @@ public class PostFileRepository implements PostRepository{
         return true;
     }
 
+    @Override
+    public List<Post> findAllByKeyword(String keyword) {
+        return findAll().stream()
+                .filter(post -> post.getTitle().contains(keyword))
+                .toList();
+    }
+
     /**
      * IOException 을 던질 수 있도록 커스텀 functionInterface 생성
      * @param <T>

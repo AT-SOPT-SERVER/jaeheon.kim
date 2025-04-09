@@ -44,4 +44,12 @@ public class PostInMemoryRepository implements PostRepository{
         postMap.put(id, post.updateTitle(postUpdateRequest.getTitle()));
         return true;
     }
+
+    @Override
+    public List<Post> findAllByKeyword(String keyword) {
+        return postMap.values()
+                .stream()
+                .filter(post -> post.getTitle().contains(keyword))
+                .toList();
+    }
 }

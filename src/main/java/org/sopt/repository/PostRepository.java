@@ -12,4 +12,5 @@ public interface PostRepository {
     public Post findPostById(Long id);
     public boolean deletePostById(Long id);
     public boolean updatePostTitle(PostUpdateRequest postUpdateRequest);
+    public List<Post> findAllByKeyword(String keyword);
 }
