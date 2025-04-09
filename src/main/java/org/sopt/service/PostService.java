@@ -31,7 +31,6 @@ public class PostService {
     }
 
     public Post getPost(Long id){
-        System.out.println(postRepository.findPostById(id).getTitle().length());
         return postRepository.findPostById(id);
     }
 
