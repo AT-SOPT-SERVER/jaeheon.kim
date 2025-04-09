@@ -47,9 +47,15 @@ public class PostInMemoryRepository implements PostRepository{
 
     @Override
     public List<Post> findAllByKeyword(String keyword) {
-        return postMap.values()
-                .stream()
+        return postMap.values().stream()
                 .filter(post -> post.getTitle().contains(keyword))
                 .toList();
+    }
+
+    @Override
+    public boolean isDuplicatedTitle(String title) {
+        return postMap.values().stream()
+                .map(Post::getTitle)
+                .anyMatch(title::equals);
     }
 }

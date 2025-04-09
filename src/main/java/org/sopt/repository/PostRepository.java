@@ -13,4 +13,5 @@ public interface PostRepository {
     public boolean deletePostById(Long id);
     public boolean updatePostTitle(PostUpdateRequest postUpdateRequest);
     public List<Post> findAllByKeyword(String keyword);
+    public boolean isDuplicatedTitle(String title);
 }

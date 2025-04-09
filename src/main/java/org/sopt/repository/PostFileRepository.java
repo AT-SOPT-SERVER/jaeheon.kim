@@ -104,6 +104,13 @@ public class PostFileRepository implements PostRepository{
                 .toList();
     }
 
+    @Override
+    public boolean isDuplicatedTitle(String title) {
+        return findAll().stream()
+                .map(Post::getTitle)
+                .anyMatch(title::equals);
+    }
+
     /**
      * IOException 을 던질 수 있도록 커스텀 functionInterface 생성
      * @param <T>

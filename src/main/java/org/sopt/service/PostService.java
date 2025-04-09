@@ -3,7 +3,6 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.PostRequest;
 import org.sopt.dto.request.PostUpdateRequest;
-import org.sopt.repository.PostInMemoryRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.validator.PostValidator;
 
@@ -18,7 +17,8 @@ public class PostService {
     }
 
     public boolean createPost(PostRequest postRequest){
-        if (!PostValidator.isValidTitle(postRequest.getTitle())){
+        if (!PostValidator.isValidTitle(postRequest.getTitle())
+                || postRepository.isDuplicatedTitle(postRequest.getTitle())){
             return false;
         }
 
@@ -39,7 +39,8 @@ public class PostService {
     }
 
     public boolean updatePostTitle(PostUpdateRequest request){
-        if (!PostValidator.isValidTitle(request.getTitle())){
+        if (!PostValidator.isValidTitle(request.getTitle())
+                || postRepository.isDuplicatedTitle(request.getTitle())){
             return false;
         }
         return postRepository.updatePostTitle(request);
