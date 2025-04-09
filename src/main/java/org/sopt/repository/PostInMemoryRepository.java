@@ -12,7 +12,7 @@ public class PostInMemoryRepository implements PostRepository{
     public Map<Long, Post> postMap = new HashMap<>();
     private final AtomicLong autoIncrement = new AtomicLong(0);
 
-    public void save(PostRequest postRequest){
+    public synchronized void save(PostRequest postRequest){
         Long newId = autoIncrement.getAndIncrement();
         postMap.put(newId, new Post(newId, postRequest.getTitle()));
     }
@@ -27,7 +27,7 @@ public class PostInMemoryRepository implements PostRepository{
         return this.postMap.get(id);
     }
 
-    public boolean deletePostById(Long id){
+    public synchronized boolean deletePostById(Long id){
         Post post = postMap.remove(id);
         if(post == null){
             return false;
@@ -35,7 +35,7 @@ public class PostInMemoryRepository implements PostRepository{
         return true;
     }
 
-    public boolean updatePostTitle(PostUpdateRequest postUpdateRequest){
+    public synchronized boolean updatePostTitle(PostUpdateRequest postUpdateRequest){
         Long id = postUpdateRequest.getId();
         Post post = findPostById(id);
         if (post == null){

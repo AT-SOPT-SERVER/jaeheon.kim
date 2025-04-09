@@ -29,7 +29,7 @@ public class PostFileRepository implements PostRepository{
     }
 
     @Override
-    public void save(PostRequest postRequest) {
+    public synchronized void save(PostRequest postRequest) {
         Long newId = autoIncrement.getAndIncrement();
 
         writeConsume(bufferedWriter -> {
@@ -63,7 +63,7 @@ public class PostFileRepository implements PostRepository{
      * @return
      */
     @Override
-    public boolean deletePostById(Long id) {
+    public synchronized boolean deletePostById(Long id) {
         List<Post> allPosts = findAll();
 
         List<Post> updatedPosts = allPosts.stream()
@@ -80,7 +80,7 @@ public class PostFileRepository implements PostRepository{
     }
 
     @Override
-    public boolean updatePostTitle(PostUpdateRequest postUpdateRequest) {
+    public synchronized boolean updatePostTitle(PostUpdateRequest postUpdateRequest) {
         List<Post> allPosts = findAll();
 
         if(findPostById(postUpdateRequest.getId()) == null){
