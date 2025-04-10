@@ -1,8 +1,7 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.request.PostRequest;
-import org.sopt.dto.request.PostUpdateRequest;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,13 +35,12 @@ public class PostInMemoryRepository implements PostRepository{
         return true;
     }
 
-    public synchronized boolean updatePostTitle(PostUpdateRequest postUpdateRequest){
-        Long id = postUpdateRequest.getId();
+    public synchronized boolean updatePostTitle(Long id, String newTitle){
         Post post = findPostById(id);
         if (post == null){
             return false;
         }
-        postMap.put(id, post.updateTitle(postUpdateRequest.getTitle()));
+        postMap.put(id, post.updateTitle(newTitle));
         return true;
     }
 

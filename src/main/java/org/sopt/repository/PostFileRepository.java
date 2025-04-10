@@ -1,8 +1,6 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.request.PostRequest;
-import org.sopt.dto.request.PostUpdateRequest;
 
 import java.io.*;
 import java.util.List;
@@ -81,16 +79,16 @@ public class PostFileRepository implements PostRepository{
     }
 
     @Override
-    public synchronized boolean updatePostTitle(PostUpdateRequest postUpdateRequest) {
+    public synchronized boolean updatePostTitle(Long id, String newTitle) {
         List<Post> allPosts = findAll();
 
-        if(findPostById(postUpdateRequest.getId()) == null){
+        if(findPostById(id) == null){
             return false;
         }
 
         allPosts.stream()
-                .map(post -> post.getId().equals(postUpdateRequest.getId())
-                        ? post.updateTitle(postUpdateRequest.getTitle()) : post)
+                .map(post -> post.getId().equals(id)
+                        ? post.updateTitle(newTitle) : post)
                 .toList();
 
         writeConsume(bufferedWriter ->
