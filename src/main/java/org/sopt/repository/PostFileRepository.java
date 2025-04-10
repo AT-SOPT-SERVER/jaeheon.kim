@@ -29,14 +29,15 @@ public class PostFileRepository implements PostRepository{
     }
 
     @Override
-    public synchronized void save(PostRequest postRequest) {
+    public synchronized void save(Post post) {
         Long newId = autoIncrement.getAndIncrement();
+        post.setId(newId);
 
         writeConsume(bufferedWriter -> {
             bufferedWriter
                     .append(String.valueOf(newId))
                     .append(DELIMITER)
-                    .append(postRequest.getTitle())
+                    .append(post.getTitle())
                     .append("\n");
         }, true);
     }

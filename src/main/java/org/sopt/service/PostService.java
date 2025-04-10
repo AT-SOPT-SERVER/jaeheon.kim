@@ -21,8 +21,8 @@ public class PostService {
                 || postRepository.isDuplicatedTitle(postRequest.getTitle())){
             return false;
         }
-
-        postRepository.save(postRequest);
+        Post post = new Post(postRequest);
+        postRepository.save(post);
         return true;
     }
 

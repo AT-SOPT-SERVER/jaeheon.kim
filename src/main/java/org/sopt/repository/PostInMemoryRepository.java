@@ -12,9 +12,10 @@ public class PostInMemoryRepository implements PostRepository{
     public Map<Long, Post> postMap = new HashMap<>();
     private final AtomicLong autoIncrement = new AtomicLong(0);
 
-    public synchronized void save(PostRequest postRequest){
+    public synchronized void save(Post post){
         Long newId = autoIncrement.getAndIncrement();
-        postMap.put(newId, new Post(newId, postRequest.getTitle()));
+        post.setId(newId);
+        postMap.put(newId, new Post(newId, post.getTitle()));
     }
 
     public List<Post> findAll(){

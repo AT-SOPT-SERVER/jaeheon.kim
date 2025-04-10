@@ -7,7 +7,7 @@ import org.sopt.dto.request.PostUpdateRequest;
 import java.util.List;
 
 public interface PostRepository {
-    public void save(PostRequest postRequest);
+    public void save(Post post);
     public List<Post> findAll();
     public Post findPostById(Long id);
     public boolean deletePostById(Long id);
