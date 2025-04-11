@@ -1,26 +1,28 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.sopt.util.IdGenerator;
+import org.sopt.util.PostUtil;
 
 import java.io.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+
+import static org.sopt.constant.PostConstant.DELIMITER;
 
 public class PostFileRepository implements PostRepository{
 
     public static final String POST_DATA_FILE_PATH = "src/main/resources/posts.md";
-    public static final String DELIMITER = ", ";
-    private final AtomicLong autoIncrement;
 
-    public PostFileRepository(){
-        Long atomicLong = lastAutoIncrementValue() + 1;
-        this.autoIncrement = new AtomicLong(atomicLong);
+    private final IdGenerator<Long> idGenerator;
+
+    public PostFileRepository(IdGenerator<Long> idGenerator){
+        this.idGenerator = idGenerator;
     }
 
-    private Long lastAutoIncrementValue(){
+    public static Long lastAutoIncrementValue(){
         return readFunction(bufferedReader -> bufferedReader.lines()
-                .map(this::parsePost)
+                .map(PostUtil::parsePost)
                 .max((post1, post2) -> Long.compare(post1.getId(), post2.getId()))
                 .map(Post::getId)
                 .orElse(0L));
@@ -28,7 +30,7 @@ public class PostFileRepository implements PostRepository{
 
     @Override
     public synchronized void save(Post post) {
-        Long newId = autoIncrement.getAndIncrement();
+        Long newId = idGenerator.generateId();
         post.setId(newId);
 
         writeConsume(bufferedWriter -> {
@@ -43,14 +45,14 @@ public class PostFileRepository implements PostRepository{
     @Override
     public List<Post> findAll() {
         return readFunction(bufferedReader -> bufferedReader.lines()
-                    .map(this::parsePost)
+                    .map(PostUtil::parsePost)
                     .toList());
     }
 
     @Override
     public Post findPostById(Long id) {
         return readFunction(bufferedReader -> bufferedReader.lines()
-                .map(this::parsePost)
+                .map(PostUtil::parsePost)
                 .filter(post -> post.getId().equals(id))
                 .findFirst()
                 .orElse(null));
@@ -128,15 +130,7 @@ public class PostFileRepository implements PostRepository{
         return stringBuilder.toString();
     }
 
-
-    private Post parsePost(String line){
-        String[] column = line.split(DELIMITER);
-        Long id = Long.parseLong(column[0]);
-        String title = column[1];
-        return new Post(id, title);
-    }
-
-    private <T> T readFunction(Function<BufferedReader, T> function){
+    private static <T> T readFunction(Function<BufferedReader, T> function){
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(POST_DATA_FILE_PATH))) {
             return function.apply(bufferedReader);
         } catch (FileNotFoundException e) {
@@ -146,7 +140,7 @@ public class PostFileRepository implements PostRepository{
         }
     }
 
-    private void writeConsume(IOConsumer<BufferedWriter> consumer, Boolean append){
+    private static void writeConsume(IOConsumer<BufferedWriter> consumer, Boolean append){
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(POST_DATA_FILE_PATH, append))) {
             consumer.accept(writer);
         } catch (IOException e) {

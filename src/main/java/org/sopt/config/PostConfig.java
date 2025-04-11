@@ -5,6 +5,8 @@ import org.sopt.repository.PostFileRepository;
 import org.sopt.repository.PostInMemoryRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.service.PostService;
+import org.sopt.util.IdGenerator;
+import org.sopt.util.LongIdGenerator;
 
 public class PostConfig {
 
@@ -20,6 +22,11 @@ public class PostConfig {
     }
 
     private static PostRepository postFileRepository(){
-        return new PostFileRepository();
+        return new PostFileRepository(longIdGenerator());
     }
+
+    private static IdGenerator<Long> longIdGenerator(){
+        return new LongIdGenerator(PostFileRepository.lastAutoIncrementValue() + 1);
+    }
+
 }

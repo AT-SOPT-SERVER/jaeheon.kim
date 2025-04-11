@@ -1,6 +1,8 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.sopt.util.IdGenerator;
+import org.sopt.util.LongIdGenerator;
 
 
 import java.util.*;
@@ -8,11 +10,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class PostInMemoryRepository implements PostRepository{
 
-    public Map<Long, Post> postMap = new HashMap<>();
-    private final AtomicLong autoIncrement = new AtomicLong(0);
+    private final Map<Long, Post> postMap = new HashMap<>();
+    private final IdGenerator<Long> idGenerator = new LongIdGenerator(0L);
 
     public synchronized void save(Post post){
-        Long newId = autoIncrement.getAndIncrement();
+        Long newId = idGenerator.generateId();
         post.setId(newId);
         postMap.put(newId, new Post(newId, post.getTitle()));
     }

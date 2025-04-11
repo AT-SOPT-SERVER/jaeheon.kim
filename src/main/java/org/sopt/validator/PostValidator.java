@@ -2,9 +2,10 @@ package org.sopt.validator;
 
 import java.text.BreakIterator;
 
+import static org.sopt.constant.CommonConstant.ZERO_WIDTH_JOINER;
+import static org.sopt.constant.PostConstant.MAX_TITLE_SIZE;
+
 public class PostValidator {
-    public static final Integer MAX_TITLE_SIZE = 30;
-    public static final Character ZERO_WIDTH_JOINER = '\u200D';
 
     public static boolean isValidTitle(String title){
         if(title.isBlank()
