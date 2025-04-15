@@ -44,3 +44,6 @@ bin/
 posts.md
 
 application.yml
+
+backupcode/
+*.backup
