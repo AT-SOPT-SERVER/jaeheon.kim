@@ -1,41 +1,53 @@
 package org.sopt.controller;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.request.PostRequest;
+import org.sopt.dto.request.post.PostRequest;
 import org.sopt.service.PostService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService){
+    public PostController(PostService postService) {
         this.postService = postService;
     }
 
-    public boolean createPost(String title){
-        PostRequest postRequest = new PostRequest(title);
-        return postService.createPost(postRequest);
+    @PostMapping
+    public ResponseEntity<?> createPost(@RequestBody final PostRequest postRequest) {
+        postService.createPost(postRequest);
+        return ResponseEntity.ok("역직렬화 성공 ");
     }
 
-    public List<Post> getAllPosts(){
-        return postService.getAllPosts();
+    @GetMapping
+    public ResponseEntity<?> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
-    public Post getPostById(Long id){
+    @GetMapping("/{post-id}")
+    public Post getPostById(@PathVariable(name = "post-id") Long id) {
         return postService.getPost(id);
     }
 
-    public boolean deletePostById(Long id){
-        return postService.deletePostById(id);
+    @DeleteMapping("/{post-id}")
+    public ResponseEntity<?> deletePostById(@PathVariable(name = "post-id") Long id) {
+        postService.deletePostById(id);
+        return ResponseEntity.ok("삭제");
     }
 
-    public boolean updatePostTitle(Long id, String title){
-        return postService.updatePostTitle(id, title);
+    @PatchMapping("/{post-id}")
+    public ResponseEntity<?> updatePostTitle(@PathVariable(name = "post-id") Long id, String title) {
+        postService.updateTitle(id, title);
+        return ResponseEntity.ok().build();
     }
 
-    public List<Post> searchPostsByKeyword(String keyword){
+    @GetMapping
+    public List<Post> searchPostsByKeyword(@RequestParam(name = "keyword") String keyword) {
         return postService.searchPostsByKeyword(keyword);
     }
 }
