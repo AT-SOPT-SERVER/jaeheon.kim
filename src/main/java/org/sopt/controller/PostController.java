@@ -36,21 +36,21 @@ public class PostController {
     }
 
     @GetMapping("/{post-id}")
-    public ResponseEntity<ResponseDto<?>> getPostById(@PathVariable(name = "post-id") final Long id) {
-        PostResponse postResponse = postService.getPost(id);
+    public ResponseEntity<ResponseDto<PostResponse>> getPostById(@PathVariable(name = "post-id") final Long id) {
+        PostResponse postResponse = postService.getPostById(id);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 단일 조회 성공", postResponse), HttpStatus.OK);
     }
 
     @DeleteMapping("/{post-id}")
-    public ResponseEntity<ResponseDto<?>> deletePostById(@PathVariable(name = "post-id") final Long id) {
+    public ResponseEntity<ResponseDto<Void>> deletePostById(@PathVariable(name = "post-id") final Long id) {
         postService.deletePostById(id);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 삭제 성공"), HttpStatus.OK);
     }
 
     @PatchMapping("/{post-id}")
-    public ResponseEntity<ResponseDto<?>> updatePostTitle(@PathVariable(name = "post-id") final Long id,
-                                                          @RequestBody @ValidPostUpdateRequest PostUpdateRequest request) {
-        postService.updateTitle(id, request);
+    public ResponseEntity<ResponseDto<Void>> updatePostTitle(@PathVariable(name = "post-id") final Long id,
+                                                             @RequestBody @ValidPostUpdateRequest PostUpdateRequest request) {
+        postService.updatePostById(id, request);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 수정 성공"), HttpStatus.OK);
     }
 

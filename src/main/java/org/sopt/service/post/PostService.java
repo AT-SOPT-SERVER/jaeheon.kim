@@ -6,65 +6,47 @@ import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.dto.response.PostResponses;
 import org.sopt.exception.ConflictException;
-import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
-import org.sopt.repository.PostRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PostService {
 
-    private final PostRepository postRepository;
+    private final PostReader postReader;
+    private final PostWriter postWriter;
 
-    public PostService(final PostRepository postRepository) {
-        this.postRepository = postRepository;
+    public PostService(final PostWriter postWriter,
+                       final PostReader postReader) {
+        this.postWriter = postWriter;
+        this.postReader = postReader;
     }
 
-    public Post findById(final Long id) {
-        return postRepository.findById(id).orElseThrow(()
-                -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
-    }
-
-    public void createPost(final PostRequest postRequest) {
-        if (isExistTitle(postRequest.title())) {
-            throw new ConflictException(ErrorCode.POST_TITLE_CONFLICT);
-        }
-        Post post = new Post(postRequest.title());
-        postRepository.save(post);
+    public PostResponse getPostById(final Long id) {
+        return postReader.getPost(id);
     }
 
     public PostResponses getPosts(final String keyword) {
-        if (keyword != null) {
-            return PostResponses.from(postRepository.findAllByTitleContaining(keyword));
-        }
-        return PostResponses.from(postRepository.findAll());
+        return postReader.getPosts(keyword);
     }
 
-    public PostResponse getPost(final Long id) {
-        Post post = findById(id);
-        return PostResponse.from(post);
+    public void createPost(final PostRequest postRequest) {
+        if (postReader.isExistTitle(postRequest.title())) {
+            throw new ConflictException(ErrorCode.POST_TITLE_CONFLICT);
+        }
+        Post post = new Post(postRequest.title());
+        postWriter.create(post);
     }
 
     public void deletePostById(final Long id) {
-        Post post = findById(id);
-        postRepository.delete(post);
+        Post post = postReader.findById(id);
+        postWriter.delete(post);
     }
 
-    public void updateTitle(final Long id, final PostUpdateRequest request) {
-        Post post = findById(id);
-
+    public void updatePostById(final Long id, final PostUpdateRequest request) {
+        Post post = postReader.findById(id);
         if (request.title().isPresent()) {
-            updatePostTitle(post, request.title().get());
+            postWriter.updateTitle(post, request.title().get());
         }
     }
 
-    @Transactional
-    protected void updatePostTitle(final Post post, final String title) {
-        post.updateTitle(title);
-    }
-
-    private boolean isExistTitle(final String title) {
-        return postRepository.existsByTitle(title);
-    }
 }
