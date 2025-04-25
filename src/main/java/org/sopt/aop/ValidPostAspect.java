@@ -4,6 +4,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.sopt.dto.request.post.PostRequest;
+import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.validator.PostValidator;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +20,22 @@ public class ValidPostAspect {
      * 그러나 이런 형태는 확장에 한계가 있음 추후 다른 도메인들이 추가된다면 매번 이렇게 확인하는 부분을 만들 수는 없음. 추후 수정 필요. 직접 구현하려고 고민해보니 validation 라이브러리의 소중함이 더 커짐
      */
     @Before("execution(* *(.., @org.sopt.annotation.ValidPostRequest (org.sopt.dto.request.post.PostRequest), ..))")
-    public void s(JoinPoint joinPoint) {
+    public void validPostRequest(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         for (Object arg : args) {
             if (arg instanceof PostRequest request) {
                 PostValidator.validTitle(request.title());
+            }
+        }
+    }
+
+    @Before("execution(* *(.., @org.sopt.annotation.ValidPostUpdateRequest (org.sopt.dto.request.post.PostUpdateRequest), ..))")
+    public void validPostUpdateRequest(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        for (Object arg : args) {
+            if (arg instanceof PostUpdateRequest request
+                    && request.title().isPresent()) {
+                PostValidator.validTitle(request.title().get());
             }
         }
     }

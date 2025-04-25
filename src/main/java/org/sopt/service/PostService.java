@@ -2,8 +2,11 @@ package org.sopt.service;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.request.post.PostRequest;
+import org.sopt.dto.request.post.PostUpdateRequest;
+import org.sopt.dto.response.PostResponse;
+import org.sopt.exception.NotFoundException;
+import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.repository.PostRepository;
-import org.sopt.validator.PostValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +17,17 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(final PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
+    public Post findById(final Long id) {
+        return postRepository.findById(id).orElseThrow(()
+                -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+    }
+
     public boolean createPost(PostRequest postRequest) {
-        if (!PostValidator.isValidTitle(postRequest.title())
-                || postRepository.existsByTitle(postRequest.title())) {
+        if (postRepository.existsByTitle(postRequest.title())) {
             return false;
         }
         Post post = Post.from(postRequest);
@@ -28,33 +35,29 @@ public class PostService {
         return true;
     }
 
-    public List<Post> getAllPosts() {
+    public List<Post> getPosts(final String keyword) {
+        if (keyword != null) {
+            return postRepository.findAllByTitleContaining(keyword);
+        }
         return postRepository.findAll();
     }
 
-    public Post getPost(Long id) {
-        return postRepository.findById(id)
-                .orElse(null);
+    public PostResponse getPost(final Long id) {
+        Post post = findById(id);
+        return PostResponse.from(post);
     }
 
-    public void deletePostById(Long id) {
+    public void deletePostById(final Long id) {
         postRepository.deleteById(id);
     }
 
-    public boolean updateTitle(Long id, String title) {
-        Post post = this.getPost(id);
-        if (!PostValidator.isValidTitle(title)
-                || post == null
-                || postRepository.existsByTitle(title)) {
-            return false;
+    public void updateTitle(final Long id, final PostUpdateRequest request) {
+        Post post = findById(id);
+
+        if (request.title().isPresent()) {
+            updatePostTitle(post, request.title().get());
+//            post.updateTitle(request.newTitle().get());
         }
-        updatePostTitle(post, title); // self-invocation 해결을 위해 파서드 패턴 적용을 고민 중
-        return true;
-    }
-
-
-    public List<Post> searchPostsByKeyword(String keyword) {
-        return postRepository.findAllByTitleContaining(keyword);
     }
 
     @Transactional

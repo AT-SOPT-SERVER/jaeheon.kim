@@ -1,7 +1,11 @@
 package org.sopt.controller;
 
-import org.sopt.domain.Post;
+import org.sopt.annotation.ValidPostRequest;
+import org.sopt.annotation.ValidPostUpdateRequest;
+import org.sopt.dto.ResponseDto;
 import org.sopt.dto.request.post.PostRequest;
+import org.sopt.dto.request.post.PostUpdateRequest;
+import org.sopt.dto.response.PostResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +45,10 @@ public class PostController {
     }
 
     @PatchMapping("/{post-id}")
-    public ResponseEntity<?> updatePostTitle(@PathVariable(name = "post-id") Long id, String title) {
-        postService.updateTitle(id, title);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResponseDto<?>> updatePostTitle(@PathVariable(name = "post-id") final Long id,
+                                                          @RequestBody @ValidPostUpdateRequest PostUpdateRequest request) {
+        postService.updateTitle(id, request);
+        return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 수정 성공"), HttpStatus.OK);
     }
 
     @GetMapping
