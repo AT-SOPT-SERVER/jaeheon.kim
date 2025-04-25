@@ -19,9 +19,9 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createPost(@RequestBody final PostRequest postRequest) {
+    public ResponseEntity<ResponseDto<?>> createPost(@RequestBody @ValidPostRequest final PostRequest postRequest) {
         postService.createPost(postRequest);
-        return ResponseEntity.ok("역직렬화 성공 ");
+        return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "post 생성 성공"), HttpStatus.CREATED);
     }
 
     @GetMapping
