@@ -30,9 +30,7 @@ public class PostService {
     }
 
     public void createPost(final PostRequest postRequest) {
-        if (postReader.isExistTitle(postRequest.title())) {
-            throw new ConflictException(ErrorCode.POST_TITLE_CONFLICT);
-        }
+        validDuplicatedTitle(postRequest.title());
         Post post = new Post(postRequest.title());
         postWriter.create(post);
     }
@@ -45,7 +43,15 @@ public class PostService {
     public void updatePostById(final Long id, final PostUpdateRequest request) {
         Post post = postReader.findById(id);
         if (request.title().isPresent()) {
-            postWriter.updateTitle(post, request.title().get());
+            String newTitle = request.title().get();
+            validDuplicatedTitle(newTitle);
+            postWriter.updateTitle(post, newTitle);
+        }
+    }
+
+    private void validDuplicatedTitle(final String title) {
+        if (postReader.isExistTitle(title)) {
+            throw new ConflictException(ErrorCode.POST_TITLE_CONFLICT);
         }
     }
 
