@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.sopt.dto.request.post.PostRequest;
 
 @Entity
 public class Post {
@@ -19,10 +18,6 @@ public class Post {
     }
 
     public Post() {
-    }
-
-    public static Post from(PostRequest postRequest) {
-        return new Post(postRequest.title());
     }
 
     public Long getId() {
