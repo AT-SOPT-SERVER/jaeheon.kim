@@ -6,11 +6,11 @@ import org.sopt.dto.ResponseDto;
 import org.sopt.dto.request.post.PostRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.PostResponse;
-import org.sopt.service.PostService;
+import org.sopt.dto.response.PostResponses;
+import org.sopt.service.post.PostService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -18,30 +18,33 @@ public class PostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService) {
+    public PostController(final PostService postService) {
         this.postService = postService;
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto<?>> createPost(@RequestBody @ValidPostRequest final PostRequest postRequest) {
+    public ResponseEntity<ResponseDto<Void>> createPost(@RequestBody @ValidPostRequest final PostRequest postRequest) {
         postService.createPost(postRequest);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "post 생성 성공"), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+    public ResponseEntity<ResponseDto<PostResponses>> getPosts(@RequestParam(name = "keyword", required = false) final String keyword) {
+
+        return new ResponseEntity<>(
+                ResponseDto.of(HttpStatus.OK, "post 목록 조회 성공", postService.getPosts(keyword)), HttpStatus.OK);
     }
 
     @GetMapping("/{post-id}")
-    public Post getPostById(@PathVariable(name = "post-id") Long id) {
-        return postService.getPost(id);
+    public ResponseEntity<ResponseDto<?>> getPostById(@PathVariable(name = "post-id") final Long id) {
+        PostResponse postResponse = postService.getPost(id);
+        return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 단일 조회 성공", postResponse), HttpStatus.OK);
     }
 
     @DeleteMapping("/{post-id}")
-    public ResponseEntity<?> deletePostById(@PathVariable(name = "post-id") Long id) {
+    public ResponseEntity<ResponseDto<?>> deletePostById(@PathVariable(name = "post-id") final Long id) {
         postService.deletePostById(id);
-        return ResponseEntity.ok("삭제");
+        return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 삭제 성공"), HttpStatus.OK);
     }
 
     @PatchMapping("/{post-id}")
@@ -51,8 +54,4 @@ public class PostController {
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 수정 성공"), HttpStatus.OK);
     }
 
-    @GetMapping
-    public List<Post> searchPostsByKeyword(@RequestParam(name = "keyword") String keyword) {
-        return postService.searchPostsByKeyword(keyword);
-    }
 }
