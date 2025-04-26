@@ -1,33 +1,34 @@
 package org.sopt.domain;
 
-import org.sopt.dto.request.PostRequest;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Post {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
 
-    public Post(Long id, String title){
-        this.id = id;
+    public Post(String title) {
         this.title = title;
     }
 
-    public Post(PostRequest postRequest){
-        this.title = postRequest.getTitle();
+    public Post() {
     }
 
     public Long getId() {
         return this.id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return this.title;
     }
 
-    public Post updateTitle(String newTitle){
+    public Post updateTitle(String newTitle) {
         this.title = newTitle;
         return this;
     }

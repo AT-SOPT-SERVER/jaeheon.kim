@@ -42,3 +42,8 @@ bin/
 .DS_Store
 
 posts.md
+
+application.yml
+
+backupcode/
+*.backup
