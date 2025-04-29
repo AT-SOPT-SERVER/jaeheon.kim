@@ -23,8 +23,8 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> createPost(@RequestBody @ValidPostRequest final PostRequest postRequest) {
-        postService.createPost(postRequest);
+    public ResponseEntity<ResponseDto<Void>> createPost(@RequestBody @ValidPostCreateRequest final PostCreateRequest postCreateRequest) {
+        postService.createPost(postCreateRequest);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "post 생성 성공"), HttpStatus.CREATED);
     }
 

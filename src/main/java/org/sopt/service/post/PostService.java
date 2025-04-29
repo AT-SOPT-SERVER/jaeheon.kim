@@ -29,10 +29,10 @@ public class PostService {
         return postReader.getPosts(keyword);
     }
 
-    public void createPost(final PostRequest postRequest) {
-        validDuplicatedTitle(postRequest.title());
-        Post post = new Post(postRequest.title());
-        postWriter.create(post);
+    public void createPost(final PostCreateRequest postCreateRequest) {
+        validDuplicatedTitle(postCreateRequest.title());
+//        Post post = new Post(postCreateRequest.title());
+//        postWriter.create(post);
     }
 
     public void deletePostById(final Long id) {
