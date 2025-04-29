@@ -1,8 +1,8 @@
 package org.sopt.service.post;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.response.PostResponse;
-import org.sopt.dto.response.PostResponses;
+import org.sopt.dto.response.post.PostResponse;
+import org.sopt.dto.response.post.PostResponses;
 import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.repository.PostRepository;

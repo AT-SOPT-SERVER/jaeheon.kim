@@ -1,4 +1,4 @@
-package org.sopt.dto.response;
+package org.sopt.dto.response.post;
 
 import org.sopt.domain.Post;
 
