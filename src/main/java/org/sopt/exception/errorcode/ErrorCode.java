@@ -6,7 +6,10 @@ public enum ErrorCode {
     NOT_BLANK("4001", "공백이 불가합니다."),
     NOT_NULL("4002", "필수 요소는 생략할 수 없습니다."),
 
+    NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다"),
+
     POST_NOT_FOUND("4040", "해당 POST 를 찾을 수 없습니다."),
+    USER_NOT_FOUND("4041", "해당 USER 를 찾을 수 없습니다."),
 
     POST_TITLE_CONFLICT("4090", "이미 존재하는 POST TITLE 입니다.");
 
