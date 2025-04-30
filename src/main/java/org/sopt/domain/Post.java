@@ -3,6 +3,12 @@ package org.sopt.domain;
 import jakarta.persistence.*;
 
 @Entity
+@Table(
+        indexes = {
+                @Index(name = "uk_title", columnList = "title", unique = true)
+        }
+)
+
 public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -20,6 +26,7 @@ public class Post {
     private String content;
 
     public Post(User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
     }
@@ -45,5 +52,9 @@ public class Post {
 
     public void updateTitle(String newTitle) {
         this.title = newTitle;
+    }
+
+    public void updateContent(String newContent) {
+        this.content = content;
     }
 }
