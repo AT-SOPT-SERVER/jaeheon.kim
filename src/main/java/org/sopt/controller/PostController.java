@@ -1,12 +1,14 @@
 package org.sopt.controller;
 
-import org.sopt.annotation.ValidPostRequest;
+import org.sopt.annotation.ValidPostCreateRequest;
 import org.sopt.annotation.ValidPostUpdateRequest;
 import org.sopt.dto.ResponseDto;
-import org.sopt.dto.request.post.PostRequest;
+import org.sopt.dto.request.post.PostCreateRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.dto.response.PostResponses;
+import org.sopt.dto.response.post.PostResponse;
+import org.sopt.dto.response.post.PostResponses;
 import org.sopt.service.post.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +25,10 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> createPost(@RequestBody @ValidPostCreateRequest final PostCreateRequest postCreateRequest) {
-        postService.createPost(postCreateRequest);
+    public ResponseEntity<ResponseDto<Void>> createPost(
+            @RequestBody @ValidPostCreateRequest final PostCreateRequest postCreateRequest,
+            @RequestHeader Long userId) {
+        postService.createPost(userId, postCreateRequest);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "post 생성 성공"), HttpStatus.CREATED);
     }
 
