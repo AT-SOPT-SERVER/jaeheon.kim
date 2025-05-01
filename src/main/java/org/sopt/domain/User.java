@@ -1,11 +1,12 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import org.sopt.domain.base.BaseEntity;
 
 import java.util.Objects;
 
 @Entity
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

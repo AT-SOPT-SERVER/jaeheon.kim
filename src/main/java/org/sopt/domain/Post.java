@@ -1,6 +1,8 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import org.sopt.domain.base.BaseEntity;
+import org.sopt.domain.enums.Tag;
 
 @Entity
 @Table(
@@ -9,7 +11,7 @@ import jakarta.persistence.*;
         }
 )
 
-public class Post {
+public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
