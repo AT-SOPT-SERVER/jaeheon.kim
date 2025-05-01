@@ -38,7 +38,10 @@ public class PostService {
 
     public void createPost(final Long userId, final PostCreateRequest postCreateRequest) {
         User user = userReader.findById(userId);
-        Post post = new Post(user, postCreateRequest.title(), postCreateRequest.content());
+        Post post = new Post(user,
+                postCreateRequest.title(),
+                postCreateRequest.content(),
+                Tag.resolveTag(postCreateRequest.tag()));
         postIntegrityRunnable(() -> postWriter.create(post));
     }
 

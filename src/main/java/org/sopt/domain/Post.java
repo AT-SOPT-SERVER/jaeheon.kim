@@ -30,10 +30,11 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Tag tag;
 
-    public Post(User user, String title, String content) {
+    public Post(User user, String title, String content, Tag tag) {
         this.user = user;
         this.title = title;
         this.content = content;
+        this.tag = tag;
     }
 
     protected Post() {
@@ -53,6 +54,10 @@ public class Post extends BaseEntity {
 
     public String getContent() {
         return content;
+    }
+
+    public Tag getTag() {
+        return tag;
     }
 
     public void updateTitle(String newTitle) {
