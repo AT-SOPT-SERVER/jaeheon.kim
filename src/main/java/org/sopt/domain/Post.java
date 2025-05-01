@@ -27,6 +27,9 @@ public class Post extends BaseEntity {
     @Column(length = 1000, nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private Tag tag;
+
     public Post(User user, String title, String content) {
         this.user = user;
         this.title = title;

@@ -5,6 +5,8 @@ public enum ErrorCode {
     LENGTH("4000", "제한 길이를 초과했습니다."),
     NOT_BLANK("4001", "공백이 불가합니다."),
     NOT_NULL("4002", "필수 요소는 생략할 수 없습니다."),
+    NOT_EXIST_TAG("4003", "잘못된 태그입니다."),
+
 
     NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다"),
 
