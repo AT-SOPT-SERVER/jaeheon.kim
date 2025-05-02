@@ -3,9 +3,9 @@ package org.sopt.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.sopt.common.util.validator.PostValidator;
 import org.sopt.dto.request.post.PostCreateRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
-import org.sopt.util.validator.PostValidator;
 import org.springframework.stereotype.Component;
 
 @Aspect

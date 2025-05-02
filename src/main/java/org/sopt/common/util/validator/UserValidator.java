@@ -1,8 +1,8 @@
-package org.sopt.util.validator;
+package org.sopt.common.util.validator;
 
+import org.sopt.common.util.StringUtil;
 import org.sopt.exception.ValidationException;
 import org.sopt.exception.errorcode.ErrorCode;
-import org.sopt.util.StringUtil;
 
 import static org.sopt.constant.UserConstant.USER_MAX_NAME_SIZE;
 
