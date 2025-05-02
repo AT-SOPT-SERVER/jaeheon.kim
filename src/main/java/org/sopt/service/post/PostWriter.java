@@ -1,8 +1,10 @@
 package org.sopt.service.post;
 
 import org.sopt.domain.Post;
+import org.sopt.domain.User;
+import org.sopt.domain.enums.Tag;
 import org.sopt.dto.request.post.PostUpdateRequest;
-import org.sopt.repository.PostRepository;
+import org.sopt.repository.post.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +16,8 @@ public class PostWriter {
         this.postRepository = postRepository;
     }
 
-    public void create(final Post post) {
+    public void create(final User user, String title, String content, Tag tag) {
+        Post post = new Post(user, title, content, tag);
         postRepository.save(post);
     }
 

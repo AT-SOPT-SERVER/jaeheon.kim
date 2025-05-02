@@ -42,13 +42,12 @@ public class PostService {
         return postReader.getPosts(keyword, target, tagOptional);
     }
 
-    public void createPost(final Long userId, final PostCreateRequest postCreateRequest) {
+    public void createPost(final Long userId, final PostCreateRequest request) {
         User user = userReader.findById(userId);
-        Post post = new Post(user,
-                postCreateRequest.title(),
-                postCreateRequest.content(),
-                Tag.resolveTag(postCreateRequest.tag()));
-        postIntegrityRunnable(() -> postWriter.create(post));
+        postIntegrityRunnable(() -> postWriter.create(user,
+                request.title(),
+                request.content(),
+                Tag.resolveTag(request.tag())));
     }
 
     public void deletePostById(final Long postId, final Long userId) {
@@ -73,7 +72,7 @@ public class PostService {
 
     /**
      * 함수형 인터페이스를 사용하여 post 쓰기 작업 시 발생하는 무결성 오류를 처리함.
-     * uk_title 인덱스로 title 관련 중복이 발생할 경우 이를 catch하여 사용자에게 POST_TITLE_CONFLICT을 전달해줌
+     * uk_title 인덱스로 title 관련 중복이 발생할 경우 이를 catch하여 사용자에게 POST_TITLE_CONFLICT 을 전달해줌
      *
      * @param runnable
      */
