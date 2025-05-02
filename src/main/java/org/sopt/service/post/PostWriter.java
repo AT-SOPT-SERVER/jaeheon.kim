@@ -8,6 +8,8 @@ import org.sopt.repository.post.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class PostWriter {
     private final PostRepository postRepository;
@@ -16,8 +18,8 @@ public class PostWriter {
         this.postRepository = postRepository;
     }
 
-    public void create(final User user, String title, String content, Tag tag) {
-        Post post = new Post(user, title, content, tag);
+    public void create(final User user, String title, String content, Optional<Tag> tag) {
+        Post post = new Post(user, title, content, tag.orElse(null));
         postRepository.save(post);
     }
 

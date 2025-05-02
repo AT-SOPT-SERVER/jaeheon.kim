@@ -38,8 +38,7 @@ public class PostService {
     public PostPreviewResponses getPosts(final Optional<String> keyword,
                                          final String target,
                                          final Optional<String> tag) {
-        Optional<Tag> tagOptional = Optional.of(tag.map(Tag::resolveTag)).orElse(null);
-        return postReader.getPosts(keyword, target, tagOptional);
+        return postReader.getPosts(keyword, target, tag.map(Tag::resolveTag));
     }
 
     public void createPost(final Long userId, final PostCreateRequest request) {
@@ -47,7 +46,8 @@ public class PostService {
         postIntegrityRunnable(() -> postWriter.create(user,
                 request.title(),
                 request.content(),
-                Tag.resolveTag(request.tag())));
+                request.tag().map(Tag::resolveTag)
+        ));
     }
 
     public void deletePostById(final Long postId, final Long userId) {
