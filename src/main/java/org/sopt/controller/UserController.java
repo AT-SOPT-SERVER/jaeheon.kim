@@ -1,5 +1,6 @@
 package org.sopt.controller;
 
+import org.sopt.annotation.ValidUserCreateRequest;
 import org.sopt.dto.ResponseDto;
 import org.sopt.dto.request.user.UserCreateRequest;
 import org.sopt.dto.response.user.UserCreateResponse;
@@ -22,9 +23,10 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<ResponseDto<UserCreateResponse>> createUser(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<ResponseDto<UserCreateResponse>> createUser(
+            @RequestBody @ValidUserCreateRequest UserCreateRequest request) {
         UserCreateResponse response = userService.save(request);
         return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "회원가입 성공", response), HttpStatus.CREATED);
     }
-    
+
 }
