@@ -32,8 +32,11 @@ public class PostService {
         return postReader.getPost(id);
     }
 
-    public PostResponses getPosts(final String keyword) {
-        return postReader.getPosts(keyword);
+    public PostPreviewResponses getPosts(final Optional<String> keyword,
+                                         final String target,
+                                         final Optional<String> tag) {
+        Optional<Tag> tagOptional = Optional.of(tag.map(Tag::resolveTag)).orElse(null);
+        return postReader.getPosts(keyword, target, tagOptional);
     }
 
     public void createPost(final Long userId, final PostCreateRequest postCreateRequest) {

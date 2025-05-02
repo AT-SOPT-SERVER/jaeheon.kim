@@ -33,10 +33,14 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<PostResponses>> getPosts(@RequestParam(name = "keyword", required = false) final String keyword) {
-
+    public ResponseEntity<ResponseDto<PostPreviewResponses>> getPosts(
+            @RequestParam(name = "keyword", required = false) final Optional<String> keyword,
+            @RequestParam(name = "target", defaultValue = DEFAULT_SEARCH_TARGET) final String target,
+            @RequestParam(name = "tag", required = false) final Optional<String> tag
+    ) {
+        PostPreviewResponses responses = postService.getPosts(keyword, target, tag);
         return new ResponseEntity<>(
-                ResponseDto.of(HttpStatus.OK, "post 목록 조회 성공", postService.getPosts(keyword)), HttpStatus.OK);
+                ResponseDto.of(HttpStatus.OK, "post 목록 조회 성공", responses), HttpStatus.OK);
     }
 
     @GetMapping("/{post-id}")
