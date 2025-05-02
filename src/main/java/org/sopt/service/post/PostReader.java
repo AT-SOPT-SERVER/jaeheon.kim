@@ -26,7 +26,8 @@ public class PostReader {
     }
 
     public PostResponse getPost(final Long id) {
-        Post post = findById(id);
+        Post post = postRepository.findByIdWithUser(id).orElseThrow(()
+                -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
         return PostResponse.from(post);
     }
 
