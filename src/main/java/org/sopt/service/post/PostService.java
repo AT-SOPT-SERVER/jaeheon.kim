@@ -2,16 +2,19 @@ package org.sopt.service.post;
 
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
+import org.sopt.domain.enums.Tag;
 import org.sopt.dto.request.post.PostCreateRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
+import org.sopt.dto.response.post.PostPreviewResponses;
 import org.sopt.dto.response.post.PostResponse;
-import org.sopt.dto.response.post.PostResponses;
 import org.sopt.exception.ConflictException;
 import org.sopt.exception.ForbiddenException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.user.UserReader;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -52,7 +55,7 @@ public class PostService {
         Post post = postReader.findById(postId);
         User requestUser = userReader.findById(userId);
 
-        checkSameUser(post.getUser(), requestUser);
+        checkWriterIsUser(post.getUser(), requestUser);
 
         postWriter.delete(post);
     }
@@ -63,7 +66,7 @@ public class PostService {
         Post post = postReader.findById(id);
         User requestUser = userReader.findById(userId);
 
-        checkSameUser(post.getUser(), requestUser);
+        checkWriterIsUser(post.getUser(), requestUser);
 
         postIntegrityRunnable(() -> postWriter.updateTitle(post, request));
     }
@@ -85,8 +88,8 @@ public class PostService {
         }
     }
 
-    private void checkSameUser(User user1, User user2) {
-        if (!user1.equals(user2)) {
+    private void checkWriterIsUser(User writer, User user) {
+        if (!user.equals(writer)) {
             throw new ForbiddenException(ErrorCode.NOT_ALLOWED_POST);
         }
     }
