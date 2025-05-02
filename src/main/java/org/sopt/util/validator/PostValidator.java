@@ -18,8 +18,11 @@ public class PostValidator {
             throw new ValidationException(ErrorCode.LENGTH, "title 의 최대 길이를 초과했습니다.");
     }
 
-    public static boolean isValidTitleLength(String title) {
-        return isLessThanMaxTitleSize(title);
+    public static void validContent(String content) {
+        if (content != null) {
+            if (content.length() > POST_MAX_CONTENT_SIZE)
+                throw new ValidationException(ErrorCode.LENGTH, "content 의 최대 길이를 초과했습니다.");
+        }
     }
 
 }
