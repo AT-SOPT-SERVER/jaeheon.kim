@@ -1,9 +1,14 @@
 package org.sopt.service.post;
 
 import org.sopt.domain.Post;
-import org.sopt.repository.PostRepository;
+import org.sopt.domain.User;
+import org.sopt.domain.enums.Tag;
+import org.sopt.dto.request.post.PostUpdateRequest;
+import org.sopt.repository.post.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class PostWriter {
@@ -13,13 +18,19 @@ public class PostWriter {
         this.postRepository = postRepository;
     }
 
-    public void create(final Post post) {
+    public void create(final User user, String title, String content, Optional<Tag> tag) {
+        Post post = new Post(user, title, content, tag.orElse(null));
         postRepository.save(post);
     }
 
     @Transactional
-    public void updateTitle(final Post post, final String title) {
-        post.updateTitle(title);
+    public void updateTitle(final Post post, final PostUpdateRequest request) {
+        if (request.title().isPresent()) {
+            post.updateTitle(request.title().get());
+        }
+        if (request.content().isPresent()) {
+            post.updateContent(request.content().get());
+        }
     }
 
     public void delete(final Post post) {

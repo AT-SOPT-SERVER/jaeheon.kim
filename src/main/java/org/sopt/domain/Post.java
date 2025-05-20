@@ -1,23 +1,43 @@
 package org.sopt.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.sopt.domain.base.BaseEntity;
+import org.sopt.domain.enums.Tag;
 
 @Entity
-public class Post {
+@Table(
+        indexes = {
+                @Index(name = "uk_title", columnList = "title", unique = true)
+        }
+)
+
+public class Post extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String title;
 
-    public Post(String title) {
+    @Column(length = 1000, nullable = false)
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    private Tag tag;
+
+    public Post(User user, String title, String content, Tag tag) {
+        this.user = user;
         this.title = title;
+        this.content = content;
+        this.tag = tag;
     }
 
-    public Post() {
+    protected Post() {
     }
 
     public Long getId() {
@@ -28,8 +48,23 @@ public class Post {
         return this.title;
     }
 
-    public Post updateTitle(String newTitle) {
+    public User getUser() {
+        return user;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void updateTitle(String newTitle) {
         this.title = newTitle;
-        return this;
+    }
+
+    public void updateContent(String newContent) {
+        this.content = content;
     }
 }

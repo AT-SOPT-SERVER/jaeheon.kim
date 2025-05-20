@@ -1,12 +1,16 @@
 package org.sopt.service.post;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.response.PostResponse;
-import org.sopt.dto.response.PostResponses;
+import org.sopt.domain.enums.Tag;
+import org.sopt.dto.response.post.PostPreviewResponses;
+import org.sopt.dto.response.post.PostResponse;
 import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
-import org.sopt.repository.PostRepository;
+import org.sopt.repository.post.PostRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostReader {
@@ -22,18 +26,16 @@ public class PostReader {
     }
 
     public PostResponse getPost(final Long id) {
-        Post post = findById(id);
+        Post post = postRepository.findByIdWithUser(id).orElseThrow(()
+                -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
         return PostResponse.from(post);
     }
 
-    public PostResponses getPosts(final String keyword) {
-        if (keyword != null) {
-            return PostResponses.from(postRepository.findAllByTitleContaining(keyword));
-        }
-        return PostResponses.from(postRepository.findAll());
-    }
+    public PostPreviewResponses getPosts(final Optional<String> keyword,
+                                         final String target,
+                                         final Optional<Tag> tag) {
+        List<Post> posts = postRepository.searchPosts(keyword, target, tag);
 
-    public boolean isExistTitle(final String title) {
-        return postRepository.existsByTitle(title);
+        return PostPreviewResponses.from(posts);
     }
 }
