@@ -28,6 +28,15 @@ public class Comment extends BaseEntity {
 	@JoinColumn(name = "post_id", nullable = false)
 	private Post post;
 
+	protected Comment() {
+	}
+
+	public Comment(Post post, User user, String content) {
+		this.content = content;
+		this.user = user;
+		this.post = post;
+	}
+
 	public Long getId() {
 		return id;
 	}
