@@ -27,6 +27,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
 }
 
 test {
