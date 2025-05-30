@@ -10,17 +10,18 @@ import jakarta.persistence.Enumerated;
 
 @Embeddable
 public class LikeId implements Serializable {
+
+	private Long userId;
 	private Long contentId;
-	private Long UserId;
 	@Enumerated(EnumType.STRING)
 	private ContentType contentType;
 
 	protected LikeId() {
 	}
 
-	protected LikeId(Long contentId, Long userId, ContentType contentType) {
+	public LikeId(Long userId, Long contentId, ContentType contentType) {
+		this.userId = userId;
 		this.contentId = contentId;
-		UserId = userId;
 		this.contentType = contentType;
 	}
 }
