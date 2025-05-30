@@ -43,6 +43,8 @@ bin/
 
 posts.md
 
+/src/main/resources
+
 application.yml
 
 backupcode/
