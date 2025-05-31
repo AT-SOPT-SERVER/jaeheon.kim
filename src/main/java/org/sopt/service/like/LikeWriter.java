@@ -18,4 +18,8 @@ public class LikeWriter {
 		Like like = Like.createLike(user, post);
 		return likeRepository.save(like);
 	}
+
+	public void delete(Like like) {
+		likeRepository.delete(like);
+	}
 }

@@ -8,6 +8,7 @@ import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.post.PostReader;
 import org.sopt.service.user.UserReader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LikeService {
@@ -32,6 +33,16 @@ public class LikeService {
 		}
 
 		return likeWriter.addPostLike(post, user);
+	}
+
+	@Transactional
+	public void deletePostLike(Long postId, Long userId) {
+		Post post = postReader.findById(postId);
+		User user = userReader.findById(userId);
+
+		Like like = likeReader.findByPostAndUserForWrite(post, user);
+
+		likeWriter.delete(like);
 	}
 
 }

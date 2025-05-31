@@ -117,12 +117,21 @@ public class PostController {
 	}
 
 	@PostMapping("/{post-id}/likes")
-	public ResponseEntity<ResponseDto<Void>> deleteComment(
+	public ResponseEntity<ResponseDto<Void>> createPostLike(
 		@PathVariable(name = "post-id") Long postId,
 		@RequestHeader(name = "userId") Long userId
 	) {
 		likeService.addPostLike(postId, userId);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 좋아요 생성 성공"), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{post-id}/likes")
+	public ResponseEntity<ResponseDto<Void>> deletePostLike(
+		@PathVariable(name = "post-id") Long postId,
+		@RequestHeader(name = "userId") Long userId
+	) {
+		likeService.deletePostLike(postId, userId);
+		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 좋아요 삭제 성공"), HttpStatus.OK);
 	}
 
 }
