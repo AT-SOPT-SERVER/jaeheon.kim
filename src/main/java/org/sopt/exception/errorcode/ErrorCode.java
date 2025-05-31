@@ -17,6 +17,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND("4041", "해당 USER 를 찾을 수 없습니다."),
 	COMMENT_NOT_FOUND("4042", "해당 COMMENT 를 찾을 수 없습니다."),
 	POST_LIKE_NOT_FOUND("4043", "해당 POST LIKE 를 찾을 수 없습니다."),
+	COMMENT_LIKE_NOT_FOUND("4044", "해당 COMMENT LIKE 를 찾을 수 없습니다."),
 
 	POST_TITLE_CONFLICT("4090", "이미 존재하는 POST TITLE 입니다."),
 	POST_ALREADY_LIKED("4091", "이미 좋아요가 존재하는 POST 입니다."),

@@ -37,4 +37,14 @@ public class LikeReader {
 
 		return like.orElseThrow(() -> new NotFoundException(ErrorCode.POST_LIKE_NOT_FOUND));
 	}
+
+	public Like findByCommentAndUserForWrite(Comment comment, User user) {
+		Optional<Like> like = likeRepository.findByUserIdAndContentIdAndContentTypeWithExclusiveLock(
+			user.getId(),
+			comment.getId(),
+			ContentType.fromType(comment));
+
+		return like.orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_LIKE_NOT_FOUND));
+	}
+
 }

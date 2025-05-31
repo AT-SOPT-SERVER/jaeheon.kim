@@ -8,6 +8,7 @@ import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.exception.ConflictException;
 import org.sopt.exception.CustomException;
+import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.comment.CommentReader;
 import org.sopt.service.post.PostReader;
@@ -51,7 +52,8 @@ public class LikeService {
 
 		Like like = likeReader.findByPostAndUserForWrite(post, user);
 
-		likeWriter.delete(like);
+		optimisticLockForWrite(() -> likeWriter.delete(like),
+			new NotFoundException(ErrorCode.POST_LIKE_NOT_FOUND));
 	}
 
 	public Like addCommentLike(Long commentId, Long postId, Long userId) {
@@ -67,9 +69,31 @@ public class LikeService {
 			new ConflictException(ErrorCode.COMMENT_ALREADY_LIKED));
 	}
 
+	@Transactional
+	public void deleteCommentLike(Long commentId, Long postId, Long userId) {
+		Comment comment = commentReader.findById(commentId);
+		comment.checkPostIdIntegrity(postId);
+
+		User user = userReader.findById(userId);
+
+		Like like = likeReader.findByCommentAndUserForWrite(comment, user);
+		likeWriter.delete(like);
+
+		optimisticLockForWrite(() -> likeWriter.delete(like),
+			new NotFoundException(ErrorCode.COMMENT_LIKE_NOT_FOUND));
+	}
+
 	private <T> T optimisticLockForWrite(Supplier<T> supplier, CustomException customException) {
 		try {
 			return supplier.get();
+		} catch (DataIntegrityViolationException e) {
+			throw customException;
+		}
+	}
+
+	private void optimisticLockForWrite(Runnable runnable, CustomException customException) {
+		try {
+			runnable.run();
 		} catch (DataIntegrityViolationException e) {
 			throw customException;
 		}
