@@ -93,7 +93,7 @@ public class PostController {
 	}
 
 	@PatchMapping("/{post-id}/comments/{comment-id}")
-	public ResponseEntity<ResponseDto<Void>> creatComment(
+	public ResponseEntity<ResponseDto<Void>> updateComment(
 		@PathVariable(name = "post-id") Long postId,
 		@PathVariable(name = "comment-id") Long commentId,
 		@RequestBody CommentUpdateRequest request,
@@ -101,6 +101,16 @@ public class PostController {
 	) {
 		commentService.updatePostComment(commentId, postId, userId, request);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 수정 성공"), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{post-id}/comments/{comment-id}")
+	public ResponseEntity<ResponseDto<Void>> deleteComment(
+		@PathVariable(name = "post-id") Long postId,
+		@PathVariable(name = "comment-id") Long commentId,
+		@RequestHeader(name = "userId") Long userId
+	) {
+		commentService.deletePostComment(commentId, postId, userId);
+		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 삭제 성공"), HttpStatus.OK);
 	}
 
 }

@@ -53,6 +53,19 @@ public class CommentService {
 		return commentWriter.update(comment, request);
 	}
 
+	public void deletePostComment(Long commentId, Long postId, Long userId) {
+		Comment comment = commentReader.findById(commentId);
+
+		if (!postId.equals(comment.getPost().getId())) {
+			throw new BadRequestException(ErrorCode.INVALID_POST_ID);
+		}
+
+		User user = userReader.findById(userId);
+		checkWriterIsUser(comment.getUser(), user);
+
+		commentWriter.delete(comment);
+	}
+
 	private void checkWriterIsUser(User writer, User user) {
 		if (!user.equals(writer)) {
 			throw new ForbiddenException(ErrorCode.NOT_ALLOWED_COMMENT);

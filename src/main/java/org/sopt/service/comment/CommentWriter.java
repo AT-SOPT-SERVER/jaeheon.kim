@@ -28,4 +28,8 @@ public class CommentWriter {
 		}
 		return comment;
 	}
+
+	public void delete(Comment comment) {
+		commentRepository.delete(comment);
+	}
 }
