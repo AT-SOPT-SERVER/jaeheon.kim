@@ -7,8 +7,6 @@ import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.request.comment.CommentCreateRequest;
 import org.sopt.dto.request.comment.CommentUpdateRequest;
-import org.sopt.exception.BadRequestException;
-import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.post.PostReader;
 import org.sopt.service.user.UserReader;
 import org.springframework.stereotype.Service;
@@ -45,9 +43,7 @@ public class CommentService {
 		Comment comment = commentReader.findById(commentId);
 		User user = userReader.findById(userId);
 
-		if (!postId.equals(comment.getPost().getId())) {
-			throw new BadRequestException(ErrorCode.INVALID_POST_ID);
-		}
+		comment.checkPostIdIntegrity(postId);
 
 		user.checkIsWriter(comment.getUser(), NOT_ALLOWED_COMMENT);
 
@@ -57,9 +53,7 @@ public class CommentService {
 	public void deletePostComment(Long commentId, Long postId, Long userId) {
 		Comment comment = commentReader.findById(commentId);
 
-		if (!postId.equals(comment.getPost().getId())) {
-			throw new BadRequestException(ErrorCode.INVALID_POST_ID);
-		}
+		comment.checkPostIdIntegrity(postId);
 
 		User user = userReader.findById(userId);
 		user.checkIsWriter(comment.getUser(), NOT_ALLOWED_COMMENT);

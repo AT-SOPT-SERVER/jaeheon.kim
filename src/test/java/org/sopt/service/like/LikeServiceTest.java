@@ -151,7 +151,7 @@ class LikeServiceTest {
 		Comment commentA = commentRepository.save(comment);
 
 		// when
-		likeService.addCommentLike(commentA.getId(), userA.getId());
+		likeService.addCommentLike(commentA.getId(), postA.getId(), userA.getId());
 
 		// then
 		assertThat(likeRepository.findAll()).hasSize(1)
@@ -178,7 +178,7 @@ class LikeServiceTest {
 
 		assertThat(likeRepository.findAll()).hasSize(1);
 		// when & then
-		assertThatThrownBy(() -> likeService.addCommentLike(commentA.getId(), userA.getId()))
+		assertThatThrownBy(() -> likeService.addCommentLike(commentA.getId(), postA.getId(), userA.getId()))
 			.isInstanceOf(ConflictException.class)
 			.satisfies(e -> {
 				ConflictException conflictException = (ConflictException)e;

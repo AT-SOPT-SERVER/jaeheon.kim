@@ -140,7 +140,7 @@ public class PostController {
 		@PathVariable(name = "comment-id") Long commentId,
 		@RequestHeader(name = "userId") Long userId
 	) {
-		likeService.addCommentLike(commentId, userId);
+		likeService.addCommentLike(commentId, postId, userId);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.CREATED, "댓글 좋아요 생성 성공"), HttpStatus.CREATED);
 	}
 

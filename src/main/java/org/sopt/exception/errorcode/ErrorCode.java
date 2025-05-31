@@ -7,7 +7,7 @@ public enum ErrorCode {
 	NOT_NULL("4002", "필수 요소는 생략할 수 없습니다."),
 	NOT_EXIST_TAG("4003", "잘못된 태그입니다."),
 	NOT_EXIST_CONTENT_TYPE("4004", "잘못된 컨텐츠 타입입니다."),
-	INVALID_POST_ID("4005", "댓글이 요청된 게시물과 일치하지 않습니다."),
+	INVALID_POST_REQUEST("4005", "잘못된 POST 관련 요청입니다."),
 
 	NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다."),
 	NOT_ALLOWED_USER("4031", "해당 USER 에 대한 권한이 없습니다."),

@@ -54,8 +54,10 @@ public class LikeService {
 		likeWriter.delete(like);
 	}
 
-	public Like addCommentLike(Long commentId, Long userId) {
+	public Like addCommentLike(Long commentId, Long postId, Long userId) {
 		Comment comment = commentReader.findById(commentId);
+		comment.checkPostIdIntegrity(postId);
+
 		User user = userReader.findById(userId);
 		if (likeReader.isUserLikedComment(comment, user)) {
 			throw new ConflictException(ErrorCode.COMMENT_ALREADY_LIKED);

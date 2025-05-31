@@ -1,6 +1,8 @@
 package org.sopt.domain;
 
 import org.sopt.domain.base.BaseEntity;
+import org.sopt.exception.BadRequestException;
+import org.sopt.exception.errorcode.ErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,5 +57,11 @@ public class Comment extends BaseEntity {
 
 	public void updateContent(String content) {
 		this.content = content;
+	}
+
+	public void checkPostIdIntegrity(Long postId) {
+		if (!this.getPost().getId().equals(postId)) {
+			throw new BadRequestException(ErrorCode.INVALID_POST_REQUEST, "댓글이 요청된 게시물과 일치하지 않습니다.");
+		}
 	}
 }
