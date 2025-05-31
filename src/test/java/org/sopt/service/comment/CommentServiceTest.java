@@ -147,7 +147,26 @@ class CommentServiceTest {
 			() -> commentService.updatePostComment(commentA.getId(), postB.getId(), userA.getId(), updateRequest))
 			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrProperty("errorCode");
+	}
 
+	@DisplayName("유저가 자신이 작성한 댓글을 정상적으로 삭제할 수 있음")
+	@Test
+	void deleteComment() {
+		// given
+		User userA = new User("userA", "email");
+		userRepository.saveAll(List.of(userA));
+
+		Post postA = new Post(userA, "postA", "contentA", null);
+		postRepository.saveAll(List.of(postA));
+
+		Comment commentA = new Comment(postA, userA, "commentA");
+		commentRepository.save(commentA);
+
+		// when & then
+		assertThat(commentRepository.findAll()).hasSize(1);
+
+		commentService.deletePostComment(commentA.getId(), postA.getId(), userA.getId());
+		assertThat(commentRepository.findAll()).hasSize(0);
 	}
 
 }
