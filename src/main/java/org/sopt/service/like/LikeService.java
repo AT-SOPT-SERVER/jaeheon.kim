@@ -1,12 +1,18 @@
 package org.sopt.service.like;
 
+import java.util.function.Supplier;
+
+import org.sopt.domain.Comment;
 import org.sopt.domain.Like;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.exception.ConflictException;
+import org.sopt.exception.CustomException;
 import org.sopt.exception.errorcode.ErrorCode;
+import org.sopt.service.comment.CommentReader;
 import org.sopt.service.post.PostReader;
 import org.sopt.service.user.UserReader;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +22,15 @@ public class LikeService {
 	private final LikeWriter likeWriter;
 	private final PostReader postReader;
 	private final UserReader userReader;
+	private final CommentReader commentReader;
 
-	public LikeService(LikeReader likeReader, LikeWriter likeWriter, PostReader postReader, UserReader userReader) {
+	public LikeService(LikeReader likeReader, LikeWriter likeWriter, PostReader postReader, UserReader userReader,
+		CommentReader commentReader) {
 		this.likeReader = likeReader;
 		this.likeWriter = likeWriter;
 		this.postReader = postReader;
 		this.userReader = userReader;
+		this.commentReader = commentReader;
 	}
 
 	public Like addPostLike(Long postId, Long userId) {
@@ -31,8 +40,8 @@ public class LikeService {
 		if (likeReader.isUserLikedPost(post, user)) {
 			throw new ConflictException(ErrorCode.POST_ALREADY_LIKED);
 		}
-
-		return likeWriter.addPostLike(post, user);
+		return optimisticLockForWrite(() -> likeWriter.addPostLike(post, user),
+			new ConflictException(ErrorCode.POST_ALREADY_LIKED));
 	}
 
 	@Transactional
@@ -43,6 +52,25 @@ public class LikeService {
 		Like like = likeReader.findByPostAndUserForWrite(post, user);
 
 		likeWriter.delete(like);
+	}
+
+	public Like addCommentLike(Long commentId, Long userId) {
+		Comment comment = commentReader.findById(commentId);
+		User user = userReader.findById(userId);
+		if (likeReader.isUserLikedComment(comment, user)) {
+			throw new ConflictException(ErrorCode.COMMENT_ALREADY_LIKED);
+		}
+
+		return optimisticLockForWrite(() -> likeWriter.addCommentLike(comment, user),
+			new ConflictException(ErrorCode.COMMENT_ALREADY_LIKED));
+	}
+
+	private <T> T optimisticLockForWrite(Supplier<T> supplier, CustomException customException) {
+		try {
+			return supplier.get();
+		} catch (DataIntegrityViolationException e) {
+			throw customException;
+		}
 	}
 
 }

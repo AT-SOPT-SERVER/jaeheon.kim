@@ -2,6 +2,7 @@ package org.sopt.service.like;
 
 import java.util.Optional;
 
+import org.sopt.domain.Comment;
 import org.sopt.domain.Like;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
@@ -22,6 +23,10 @@ public class LikeReader {
 
 	public boolean isUserLikedPost(Post post, User user) {
 		return likeRepository.exists(Example.of(Like.createLike(user, post)));
+	}
+
+	public boolean isUserLikedComment(Comment comment, User user) {
+		return likeRepository.exists(Example.of(Like.createLike(user, comment)));
 	}
 
 	public Like findByPostAndUserForWrite(Post post, User user) {

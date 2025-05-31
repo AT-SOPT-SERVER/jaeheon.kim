@@ -20,7 +20,7 @@ public enum ErrorCode {
 
 	POST_TITLE_CONFLICT("4090", "이미 존재하는 POST TITLE 입니다."),
 	POST_ALREADY_LIKED("4091", "이미 좋아요가 존재하는 POST 입니다."),
-	;
+	COMMENT_ALREADY_LIKED("4092", "이미 좋아요가 존재하는 COMMENT 입니다.");
 
 	private final String statusCode;
 	private final String message;
