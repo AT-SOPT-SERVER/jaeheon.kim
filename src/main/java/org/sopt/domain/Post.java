@@ -1,5 +1,7 @@
 package org.sopt.domain;
 
+import java.util.Objects;
+
 import org.sopt.domain.base.BaseEntity;
 import org.sopt.domain.enums.Tag;
 
@@ -77,5 +79,21 @@ public class Post extends BaseEntity {
 
 	public void updateContent(String newContent) {
 		this.content = newContent;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Post that)) {
+			return false;
+		}
+		return Objects.equals(this.getId(), that.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getId());
 	}
 }
