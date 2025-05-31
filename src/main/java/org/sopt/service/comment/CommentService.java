@@ -5,6 +5,7 @@ import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.request.comment.CommentCreateRequest;
 import org.sopt.dto.request.comment.CommentUpdateRequest;
+import org.sopt.exception.BadRequestException;
 import org.sopt.exception.ForbiddenException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.post.PostReader;
@@ -39,9 +40,13 @@ public class CommentService {
 	}
 
 	@Transactional
-	public Comment updatePostComment(Long commentId, Long userId, CommentUpdateRequest request) {
+	public Comment updatePostComment(Long commentId, Long postId, Long userId, CommentUpdateRequest request) {
 		Comment comment = commentReader.findById(commentId);
 		User user = userReader.findById(userId);
+
+		if (!postId.equals(comment.getPost().getId())) {
+			throw new BadRequestException(ErrorCode.INVALID_POST_ID);
+		}
 
 		checkWriterIsUser(comment.getUser(), user);
 

@@ -13,6 +13,7 @@ import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.request.comment.CommentCreateRequest;
 import org.sopt.dto.request.comment.CommentUpdateRequest;
+import org.sopt.exception.BadRequestException;
 import org.sopt.exception.ForbiddenException;
 import org.sopt.repository.CommentRepository;
 import org.sopt.repository.UserRepository;
@@ -94,7 +95,7 @@ class CommentServiceTest {
 		String updatedContent = "updatedA";
 		CommentUpdateRequest updateRequest = new CommentUpdateRequest(Optional.of(updatedContent));
 		// when
-		commentService.updatePostComment(commentA.getId(), userA.getId(), updateRequest);
+		commentService.updatePostComment(commentA.getId(), postA.getId(), userA.getId(), updateRequest);
 
 		// then
 		Comment result = commentRepository.findById(commentA.getId()).get();
@@ -118,8 +119,33 @@ class CommentServiceTest {
 		String updatedContent = "updatedA";
 		CommentUpdateRequest updateRequest = new CommentUpdateRequest(Optional.of(updatedContent));
 		// when & then
-		assertThatThrownBy(() -> commentService.updatePostComment(commentA.getId(), userB.getId(), updateRequest))
+		assertThatThrownBy(
+			() -> commentService.updatePostComment(commentA.getId(), postA.getId(), userB.getId(), updateRequest))
 			.isInstanceOf(ForbiddenException.class)
+			.hasFieldOrProperty("errorCode");
+
+	}
+
+	@DisplayName("댓글의 게시글 정보가 아닌 다른 게시글로 댓글 수정을 시도하는 경우 예외가 발생함")
+	@Test
+	void updateCommentOtherPost() {
+		// given
+		User userA = new User("userA", "email");
+		userRepository.saveAll(List.of(userA));
+
+		Post postA = new Post(userA, "postA", "contentA", null);
+		Post postB = new Post(userA, "postB", "contentB", null);
+		postRepository.saveAll(List.of(postA, postB));
+
+		CommentCreateRequest request = new CommentCreateRequest("commentA");
+		Comment commentA = commentService.createPostComment(postA.getId(), userA.getId(), request);
+
+		String updatedContent = "updatedA";
+		CommentUpdateRequest updateRequest = new CommentUpdateRequest(Optional.of(updatedContent));
+		// when & then
+		assertThatThrownBy(
+			() -> commentService.updatePostComment(commentA.getId(), postB.getId(), userA.getId(), updateRequest))
+			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrProperty("errorCode");
 
 	}

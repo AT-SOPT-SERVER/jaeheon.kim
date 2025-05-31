@@ -99,7 +99,7 @@ public class PostController {
 		@RequestBody CommentUpdateRequest request,
 		@RequestHeader(name = "userId") Long userId
 	) {
-		commentService.updatePostComment(commentId, userId, request);
+		commentService.updatePostComment(commentId, postId, userId, request);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 수정 성공"), HttpStatus.OK);
 	}
 
