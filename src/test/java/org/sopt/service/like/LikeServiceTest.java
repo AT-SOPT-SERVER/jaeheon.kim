@@ -186,4 +186,50 @@ class LikeServiceTest {
 			});
 	}
 
+	@DisplayName("좋아요가 존재하는 댓글에 대해 좋아요를 성공적으로 삭제함")
+	@Test
+	void deleteCommentLike() {
+		// given
+		User user = new User("userA", "email");
+		User userA = userRepository.save(user);
+
+		Post post = new Post(user, "postA", "contentA", null);
+		Post postA = postRepository.save(post);
+
+		Comment comment = new Comment(postA, userA, "commentA");
+		Comment commentA = commentRepository.save(comment);
+
+		Like likeA = likeRepository.save(Like.createLike(userA, commentA));
+		assertThat(likeRepository.findAll()).hasSize(1);
+
+		// when
+		likeService.deleteCommentLike(commentA.getId(), postA.getId(), userA.getId());
+
+		// then
+		List<Like> result = likeRepository.findAll();
+		assertThat(result).hasSize(0);
+	}
+
+	@DisplayName("좋아요가 존재하지 않는 댓글에 좋아요 삭제 요청을 할 경우 예외가 발생함")
+	@Test
+	void deleteNotExistCommentLike() {
+		// given
+		User user = new User("userA", "email");
+		User userA = userRepository.save(user);
+
+		Post post = new Post(user, "postA", "contentA", null);
+		Post postA = postRepository.save(post);
+
+		Comment comment = new Comment(postA, userA, "commentA");
+		Comment commentA = commentRepository.save(comment);
+
+		// when & then
+		assertThatThrownBy(() -> likeService.deleteCommentLike(commentA.getId(), postA.getId(), userA.getId()))
+			.isInstanceOf(NotFoundException.class)
+			.satisfies(e -> {
+				NotFoundException notFoundException = (NotFoundException)e;
+				assertThat(notFoundException.getErrorCode()).isEqualTo(ErrorCode.COMMENT_LIKE_NOT_FOUND);
+			});
+	}
+
 }
