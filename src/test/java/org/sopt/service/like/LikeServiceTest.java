@@ -12,6 +12,7 @@ import org.sopt.domain.Like;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.exception.ConflictException;
+import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.repository.LikeRepository;
 import org.sopt.repository.UserRepository;
@@ -87,6 +88,47 @@ class LikeServiceTest {
 			.satisfies(e -> {
 				ConflictException conflictException = (ConflictException)e;
 				assertThat(conflictException.getErrorCode()).isEqualTo(ErrorCode.POST_ALREADY_LIKED);
+			});
+	}
+
+	@DisplayName("좋아요가 존재하는 게시글에 대해 좋아요를 성공적으로 삭제함")
+	@Test
+	void deletePostLike() {
+		// given
+		User user = new User("userA", "email");
+		User userA = userRepository.save(user);
+
+		Post post = new Post(user, "postA", "contentA", null);
+		Post postA = postRepository.save(post);
+
+		Like likeA = likeRepository.save(Like.createLike(userA, postA));
+		assertThat(likeRepository.findAll()).hasSize(1);
+
+		// when
+		likeService.deletePostLike(postA.getId(), userA.getId());
+
+		// then
+		List<Like> result = likeRepository.findAll();
+
+		assertThat(result).hasSize(0);
+	}
+
+	@DisplayName("좋아요가 존재하지 않는 게시글에 좋아요 삭제 요청을 할 경우 예외가 발생함")
+	@Test
+	void deleteNotExistPostLike() {
+		// given
+		User user = new User("userA", "email");
+		User userA = userRepository.save(user);
+
+		Post post = new Post(user, "postA", "contentA", null);
+		Post postA = postRepository.save(post);
+
+		// when & then
+		assertThatThrownBy(() -> likeService.deletePostLike(postA.getId(), userA.getId()))
+			.isInstanceOf(NotFoundException.class)
+			.satisfies(e -> {
+				NotFoundException notFoundException = (NotFoundException)e;
+				assertThat(notFoundException.getErrorCode()).isEqualTo(ErrorCode.POST_LIKE_NOT_FOUND);
 			});
 	}
 
