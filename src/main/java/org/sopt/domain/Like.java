@@ -1,5 +1,7 @@
 package org.sopt.domain;
 
+import java.util.Objects;
+
 import org.sopt.domain.base.BaseEntity;
 import org.sopt.domain.enums.ContentType;
 import org.sopt.domain.id.LikeId;
@@ -38,5 +40,23 @@ public class Like extends BaseEntity {
 	private static Like createLike(Long userId, Long contentId, Object object) {
 		LikeId likeId = new LikeId(userId, contentId, ContentType.fromType(object));
 		return new Like(likeId);
+	}
+
+	public LikeId getId() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Like like))
+			return false;
+		return Objects.equals(id, like.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

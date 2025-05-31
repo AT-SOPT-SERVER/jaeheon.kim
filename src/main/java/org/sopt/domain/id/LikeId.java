@@ -1,6 +1,7 @@
 package org.sopt.domain.id;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.sopt.domain.enums.ContentType;
 
@@ -23,5 +24,35 @@ public class LikeId implements Serializable {
 		this.userId = userId;
 		this.contentId = contentId;
 		this.contentType = contentType;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public Long getContentId() {
+		return contentId;
+	}
+
+	public ContentType getContentType() {
+		return contentType;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+
+		if (!(o instanceof LikeId likeId))
+			return false;
+
+		return Objects.equals(userId, likeId.userId) &&
+			Objects.equals(contentId, likeId.contentId) &&
+			contentType.equals(likeId.contentType);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId, contentId, contentType);
 	}
 }
