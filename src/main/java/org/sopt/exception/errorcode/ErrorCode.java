@@ -8,10 +8,13 @@ public enum ErrorCode {
 	NOT_EXIST_TAG("4003", "잘못된 태그입니다."),
 	NOT_EXIST_CONTENT_TYPE("4004", "잘못된 컨텐츠 타입입니다."),
 
-	NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다"),
+	NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다."),
+	NOT_ALLOWED_USER("4031", "해당 USER 에 대한 권한이 없습니다."),
+	NOT_ALLOWED_COMMENT("4032", "해당 COMMENT 에 대한 권한이 없습니다."),
 
 	POST_NOT_FOUND("4040", "해당 POST 를 찾을 수 없습니다."),
 	USER_NOT_FOUND("4041", "해당 USER 를 찾을 수 없습니다."),
+	COMMENT_NOT_FOUND("4042", "해당 COMMENT 를 찾을 수 없습니다."),
 
 	POST_TITLE_CONFLICT("4090", "이미 존재하는 POST TITLE 입니다.");
 

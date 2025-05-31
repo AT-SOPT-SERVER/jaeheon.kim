@@ -8,6 +8,7 @@ import org.sopt.annotation.ValidPostCreateRequest;
 import org.sopt.annotation.ValidPostUpdateRequest;
 import org.sopt.dto.ResponseDto;
 import org.sopt.dto.request.comment.CommentCreateRequest;
+import org.sopt.dto.request.comment.CommentUpdateRequest;
 import org.sopt.dto.request.post.PostCreateRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.post.PostPreviewResponses;
@@ -81,7 +82,7 @@ public class PostController {
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "post 수정 성공"), HttpStatus.OK);
 	}
 
-	@PostMapping("/{post-id}/comment")
+	@PostMapping("/{post-id}/comments")
 	public ResponseEntity<ResponseDto<Void>> creatComment(
 		@PathVariable(name = "post-id") Long postId,
 		@RequestBody CommentCreateRequest request,
@@ -89,6 +90,17 @@ public class PostController {
 	) {
 		commentService.createPostComment(postId, userId, request);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 작성 성공"), HttpStatus.OK);
+	}
+
+	@PatchMapping("/{post-id}/comments/{comment-id}")
+	public ResponseEntity<ResponseDto<Void>> creatComment(
+		@PathVariable(name = "post-id") Long postId,
+		@PathVariable(name = "comment-id") Long commentId,
+		@RequestBody CommentUpdateRequest request,
+		@RequestHeader(name = "userId") Long userId
+	) {
+		commentService.updatePostComment(commentId, userId, request);
+		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 수정 성공"), HttpStatus.OK);
 	}
 
 }
