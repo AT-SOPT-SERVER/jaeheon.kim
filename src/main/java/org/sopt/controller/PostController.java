@@ -14,6 +14,7 @@ import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.post.PostPreviewResponses;
 import org.sopt.dto.response.post.PostResponse;
 import org.sopt.service.comment.CommentService;
+import org.sopt.service.like.LikeService;
 import org.sopt.service.post.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +35,12 @@ public class PostController {
 
 	private final PostService postService;
 	private final CommentService commentService;
+	private final LikeService likeService;
 
-	public PostController(final PostService postService, CommentService commentService) {
+	public PostController(final PostService postService, CommentService commentService, LikeService likeService) {
 		this.postService = postService;
 		this.commentService = commentService;
+		this.likeService = likeService;
 	}
 
 	@PostMapping
@@ -111,6 +114,15 @@ public class PostController {
 	) {
 		commentService.deletePostComment(commentId, postId, userId);
 		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 댓글 삭제 성공"), HttpStatus.OK);
+	}
+
+	@PostMapping("/{post-id}/likes")
+	public ResponseEntity<ResponseDto<Void>> deleteComment(
+		@PathVariable(name = "post-id") Long postId,
+		@RequestHeader(name = "userId") Long userId
+	) {
+		likeService.addPostLike(postId, userId);
+		return new ResponseEntity<>(ResponseDto.of(HttpStatus.OK, "게시글 좋아요 생성 성공"), HttpStatus.OK);
 	}
 
 }
