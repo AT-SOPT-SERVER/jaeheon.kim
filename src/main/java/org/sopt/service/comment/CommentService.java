@@ -1,12 +1,13 @@
 package org.sopt.service.comment;
 
+import static org.sopt.exception.errorcode.ErrorCode.*;
+
 import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.request.comment.CommentCreateRequest;
 import org.sopt.dto.request.comment.CommentUpdateRequest;
 import org.sopt.exception.BadRequestException;
-import org.sopt.exception.ForbiddenException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.post.PostReader;
 import org.sopt.service.user.UserReader;
@@ -48,7 +49,7 @@ public class CommentService {
 			throw new BadRequestException(ErrorCode.INVALID_POST_ID);
 		}
 
-		checkWriterIsUser(comment.getUser(), user);
+		user.checkIsWriter(comment.getUser(), NOT_ALLOWED_COMMENT);
 
 		return commentWriter.update(comment, request);
 	}
@@ -61,14 +62,9 @@ public class CommentService {
 		}
 
 		User user = userReader.findById(userId);
-		checkWriterIsUser(comment.getUser(), user);
+		user.checkIsWriter(comment.getUser(), NOT_ALLOWED_COMMENT);
 
 		commentWriter.delete(comment);
 	}
 
-	private void checkWriterIsUser(User writer, User user) {
-		if (!user.equals(writer)) {
-			throw new ForbiddenException(ErrorCode.NOT_ALLOWED_COMMENT);
-		}
-	}
 }

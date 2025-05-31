@@ -3,6 +3,8 @@ package org.sopt.domain;
 import java.util.Objects;
 
 import org.sopt.domain.base.BaseEntity;
+import org.sopt.exception.ForbiddenException;
+import org.sopt.exception.errorcode.ErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +43,12 @@ public class User extends BaseEntity {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public void checkIsWriter(User writer, ErrorCode errorCode) {
+		if (!this.equals(writer)) {
+			throw new ForbiddenException(errorCode);
+		}
 	}
 
 	@Override

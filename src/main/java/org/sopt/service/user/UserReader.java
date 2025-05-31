@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserReader {
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    public UserReader(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	public UserReader(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    public User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(()
-                -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
+	public User findById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(()
+			-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+	}
 
 }

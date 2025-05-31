@@ -10,28 +10,24 @@ import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.post.PostPreviewResponses;
 import org.sopt.dto.response.post.PostResponse;
 import org.sopt.exception.ConflictException;
-import org.sopt.exception.ForbiddenException;
 import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.user.UserReader;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-
 @Service
 public class PostService {
-
-	private final EntityManager entityManager;
 
 	private final PostReader postReader;
 	private final PostWriter postWriter;
 	private final UserReader userReader;
 
-	public PostService(EntityManager entityManager, final PostWriter postWriter,
+	public PostService(
+		final PostWriter postWriter,
 		final PostReader postReader,
-		final UserReader userReader) {
-		this.entityManager = entityManager;
+		final UserReader userReader
+	) {
 		this.postWriter = postWriter;
 		this.postReader = postReader;
 		this.userReader = userReader;
@@ -60,7 +56,7 @@ public class PostService {
 		Post post = postReader.findById(postId);
 		User requestUser = userReader.findById(userId);
 
-		checkWriterIsUser(post.getUser(), requestUser);
+		requestUser.checkIsWriter(post.getUser(), ErrorCode.NOT_ALLOWED_POST);
 
 		postWriter.delete(post);
 	}
@@ -69,20 +65,14 @@ public class PostService {
 	public void updatePostById(
 		final Long id,
 		final PostUpdateRequest request,
-		final Long userId) {
+		final Long userId
+	) {
 		Post post = postReader.findById(id);
 		User requestUser = userReader.findById(userId);
 
-		boolean isManaged = entityManager.contains(post);
-
-		checkWriterIsUser(post.getUser(), requestUser);
+		requestUser.checkIsWriter(post.getUser(), ErrorCode.NOT_ALLOWED_POST);
 
 		postIntegrityRunnable(() -> postWriter.update(post, request));
-
-		boolean isManaged2 = entityManager.contains(post);
-
-		System.out.print(isManaged2);
-
 	}
 
 	/**
@@ -102,9 +92,4 @@ public class PostService {
 		}
 	}
 
-	private void checkWriterIsUser(User writer, User user) {
-		if (!user.equals(writer)) {
-			throw new ForbiddenException(ErrorCode.NOT_ALLOWED_POST);
-		}
-	}
 }
