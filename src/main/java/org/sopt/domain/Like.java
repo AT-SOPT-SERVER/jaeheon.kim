@@ -3,10 +3,7 @@ package org.sopt.domain;
 import java.util.Objects;
 
 import org.sopt.domain.base.BaseEntity;
-import org.sopt.domain.enums.ContentType;
 import org.sopt.domain.id.LikeId;
-import org.sopt.exception.BadRequestException;
-import org.sopt.exception.errorcode.ErrorCode;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,17 +26,7 @@ public class Like extends BaseEntity {
 	}
 
 	public static Like createLike(User user, Object object) {
-		if (object instanceof Post post)
-			return createLike(user.getId(), post.getId(), post);
-		if (object instanceof Comment comment)
-			return createLike(user.getId(), comment.getId(), comment);
-
-		throw new BadRequestException(ErrorCode.NOT_EXIST_CONTENT_TYPE);
-	}
-
-	private static Like createLike(Long userId, Long contentId, Object object) {
-		LikeId likeId = new LikeId(userId, contentId, ContentType.fromType(object));
-		return new Like(likeId);
+		return new Like(LikeId.generate(user, object));
 	}
 
 	public LikeId getId() {

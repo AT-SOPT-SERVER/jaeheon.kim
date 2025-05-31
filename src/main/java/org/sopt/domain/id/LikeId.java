@@ -3,7 +3,12 @@ package org.sopt.domain.id;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.sopt.domain.Comment;
+import org.sopt.domain.Post;
+import org.sopt.domain.User;
 import org.sopt.domain.enums.ContentType;
+import org.sopt.exception.BadRequestException;
+import org.sopt.exception.errorcode.ErrorCode;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -20,10 +25,23 @@ public class LikeId implements Serializable {
 	protected LikeId() {
 	}
 
-	public LikeId(Long userId, Long contentId, ContentType contentType) {
+	protected LikeId(Long userId, Long contentId, ContentType contentType) {
 		this.userId = userId;
 		this.contentId = contentId;
 		this.contentType = contentType;
+	}
+
+	public static LikeId generate(User user, Object object) {
+		if (object instanceof Post post)
+			return createLikeId(user.getId(), post.getId(), post);
+		if (object instanceof Comment comment)
+			return createLikeId(user.getId(), comment.getId(), comment);
+
+		throw new BadRequestException(ErrorCode.NOT_EXIST_CONTENT_TYPE);
+	}
+
+	private static LikeId createLikeId(Long userId, Long contentId, Object object) {
+		return new LikeId(userId, contentId, ContentType.fromType(object));
 	}
 
 	public Long getUserId() {
