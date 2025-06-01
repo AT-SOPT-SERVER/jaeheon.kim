@@ -3,12 +3,9 @@ package org.sopt.domain;
 import java.util.Objects;
 
 import org.sopt.domain.base.BaseEntity;
-import org.sopt.domain.enums.Tag;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,14 +37,10 @@ public class Post extends BaseEntity {
 	@Column(length = 1000, nullable = false)
 	private String content;
 
-	@Enumerated(EnumType.STRING)
-	private Tag tag;
-
-	public Post(User user, String title, String content, Tag tag) {
+	public Post(User user, String title, String content) {
 		this.user = user;
 		this.title = title;
 		this.content = content;
-		this.tag = tag;
 	}
 
 	protected Post() {
@@ -67,10 +60,6 @@ public class Post extends BaseEntity {
 
 	public String getContent() {
 		return content;
-	}
-
-	public Tag getTag() {
-		return tag;
 	}
 
 	public void updateTitle(String newTitle) {
