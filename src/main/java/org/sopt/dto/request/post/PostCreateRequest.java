@@ -1,8 +1,8 @@
 package org.sopt.dto.request.post;
 
-import java.util.Optional;
+import java.util.List;
 
 public record PostCreateRequest(String title,
-                                String content,
-                                Optional<String> tag) {
+								String content,
+								List<Long> tagIds) {
 }

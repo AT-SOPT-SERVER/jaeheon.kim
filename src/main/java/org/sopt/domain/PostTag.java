@@ -23,4 +23,13 @@ public class PostTag {
 	@JoinColumn(name = "tag_id", nullable = false)
 	private Tag tag;
 
+	private PostTag(Post post, Tag tag) {
+		this.post = post;
+		this.tag = tag;
+	}
+
+	public static PostTag create(Post post, Tag tag) {
+		return new PostTag(post, tag);
+	}
+
 }
