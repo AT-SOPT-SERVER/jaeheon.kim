@@ -32,4 +32,12 @@ public class CommentWriter {
 	public void delete(Comment comment) {
 		commentRepository.delete(comment);
 	}
+
+	public void increaseCommentLike(Comment comment) {
+		commentRepository.increaseCommentLike(comment);
+	}
+
+	public void decreaseCommentLike(Comment comment) {
+		commentRepository.decreaseCommentLike(comment);
+	}
 }

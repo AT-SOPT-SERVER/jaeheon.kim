@@ -32,6 +32,14 @@ public class PostWriter {
 		return post;
 	}
 
+	public void increaseLikeCount(Post post) {
+		postRepository.increasePostLike(post);
+	}
+
+	public void decreaseLikeCount(Post post) {
+		postRepository.decreasePostLike(post);
+	}
+
 	public void delete(final Post post) {
 		postRepository.delete(post);
 	}
