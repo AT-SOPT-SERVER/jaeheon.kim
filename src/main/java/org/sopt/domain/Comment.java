@@ -30,6 +30,8 @@ public class Comment extends BaseEntity {
 	@JoinColumn(name = "post_id", nullable = false)
 	private Post post;
 
+	private int likeCount = 0;
+
 	protected Comment() {
 	}
 
@@ -37,6 +39,11 @@ public class Comment extends BaseEntity {
 		this.content = content;
 		this.user = user;
 		this.post = post;
+		this.likeCount = 0;
+	}
+
+	public void increaseLikeCount() {
+		this.likeCount++;
 	}
 
 	public Long getId() {

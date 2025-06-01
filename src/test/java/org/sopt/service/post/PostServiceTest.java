@@ -39,7 +39,7 @@ class PostServiceTest {
 		User user = new User("userA", "email");
 		User userA = userRepository.save(user);
 
-		Post post = new Post(user, "postA", "contentA", null);
+		Post post = Post.createNew(user, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		String updatedContent = "updatedA";
@@ -62,7 +62,7 @@ class PostServiceTest {
 		User user2 = new User("user2", "email2");
 		userRepository.saveAll(List.of(user, user2));
 
-		Post post = new Post(user, "postA", "contentA", null);
+		Post post = Post.createNew(user, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		String updatedContent = "updatedA";

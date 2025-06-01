@@ -37,13 +37,31 @@ public class Post extends BaseEntity {
 	@Column(length = 1000, nullable = false)
 	private String content;
 
-	public Post(User user, String title, String content) {
+	private int likeCount = 0;
+
+	private int commentCount = 0;
+
+	private Post(User user, String title, String content, Integer likeCount, Integer commentCount) {
 		this.user = user;
 		this.title = title;
 		this.content = content;
+		this.likeCount = likeCount;
+		this.commentCount = commentCount;
 	}
 
 	protected Post() {
+	}
+
+	public static Post createNew(User user, String title, String content) {
+		return new Post(user, title, content, 0, 0);
+	}
+
+	public void increaseLikeCount() {
+		this.likeCount++;
+	}
+
+	public void increaseCommentCount() {
+		this.commentCount++;
 	}
 
 	public Long getId() {
@@ -60,6 +78,14 @@ public class Post extends BaseEntity {
 
 	public String getContent() {
 		return content;
+	}
+
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public int getCommentCount() {
+		return commentCount;
 	}
 
 	public void updateTitle(String newTitle) {

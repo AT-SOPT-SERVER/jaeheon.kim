@@ -16,7 +16,7 @@ public class PostWriter {
 	}
 
 	public Post create(final User user, String title, String content) {
-		Post post = new Post(user, title, content);
+		Post post = Post.createNew(user, title, content);
 		return postRepository.save(post);
 	}
 

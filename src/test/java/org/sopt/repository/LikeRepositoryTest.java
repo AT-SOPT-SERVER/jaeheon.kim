@@ -43,7 +43,7 @@ class LikeRepositoryTest {
 		User user = new User("userA", "email");
 		User userA = userRepository.save(user);
 
-		Post post = new Post(user, "postA", "contentA", null);
+		Post post = Post.createNew(user, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		Like likeA = likeRepository.save(Like.createLike(userA, postA));

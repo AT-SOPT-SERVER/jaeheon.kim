@@ -18,10 +18,6 @@ import org.sopt.exception.ForbiddenException;
 import org.sopt.repository.CommentRepository;
 import org.sopt.repository.UserRepository;
 import org.sopt.repository.post.PostRepository;
-import org.sopt.service.post.PostReader;
-import org.sopt.service.post.PostWriter;
-import org.sopt.service.user.UserReader;
-import org.sopt.service.user.UserWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,16 +33,6 @@ class CommentServiceTest {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private CommentWriter commentWriter;
-	@Autowired
-	private PostReader postReader;
-	@Autowired
-	private PostWriter postWriter;
-	@Autowired
-	private UserReader userReader;
-	@Autowired
-	private UserWriter userWriter;
 	@Autowired
 	private CommentService commentService;
 
@@ -64,7 +50,7 @@ class CommentServiceTest {
 		User user = new User("userA", "email");
 		User userA = userRepository.save(user);
 
-		Post post = new Post(user, "postA", "contentA", null);
+		Post post = Post.createNew(user, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		CommentCreateRequest request = new CommentCreateRequest("commentA");
@@ -86,7 +72,7 @@ class CommentServiceTest {
 		User user = new User("userA", "email");
 		User userA = userRepository.save(user);
 
-		Post post = new Post(user, "postA", "contentA", null);
+		Post post = Post.createNew(user, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		CommentCreateRequest request = new CommentCreateRequest("commentA");
@@ -110,7 +96,7 @@ class CommentServiceTest {
 		User userB = new User("userB", "email");
 		userRepository.saveAll(List.of(userA, userB));
 
-		Post post = new Post(userA, "postA", "contentA", null);
+		Post post = Post.createNew(userA, "postA", "contentA");
 		Post postA = postRepository.save(post);
 
 		CommentCreateRequest request = new CommentCreateRequest("commentA");
@@ -133,8 +119,8 @@ class CommentServiceTest {
 		User userA = new User("userA", "email");
 		userRepository.saveAll(List.of(userA));
 
-		Post postA = new Post(userA, "postA", "contentA", null);
-		Post postB = new Post(userA, "postB", "contentB", null);
+		Post postA = Post.createNew(userA, "postA", "contentA");
+		Post postB = Post.createNew(userA, "postA", "contentA");
 		postRepository.saveAll(List.of(postA, postB));
 
 		CommentCreateRequest request = new CommentCreateRequest("commentA");
@@ -156,7 +142,7 @@ class CommentServiceTest {
 		User userA = new User("userA", "email");
 		userRepository.saveAll(List.of(userA));
 
-		Post postA = new Post(userA, "postA", "contentA", null);
+		Post postA = Post.createNew(userA, "postA", "contentA");
 		postRepository.saveAll(List.of(postA));
 
 		Comment commentA = new Comment(postA, userA, "commentA");
