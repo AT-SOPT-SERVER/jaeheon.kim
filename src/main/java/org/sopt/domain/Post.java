@@ -1,9 +1,12 @@
 package org.sopt.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.sopt.domain.base.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,6 +26,8 @@ import jakarta.persistence.Table;
 	}
 )
 public class Post extends BaseEntity {
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post")
+	private final List<PostTag> postTags = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -62,6 +68,10 @@ public class Post extends BaseEntity {
 
 	public void increaseCommentCount() {
 		this.commentCount++;
+	}
+
+	public List<PostTag> getPostTags() {
+		return postTags;
 	}
 
 	public Long getId() {
