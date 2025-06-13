@@ -40,6 +40,14 @@ public class PostWriter {
 		postRepository.decreasePostLike(post);
 	}
 
+	public void increaseCommentCount(Post post) {
+		postRepository.increaseCommentCount(post);
+	}
+
+	public void decreaseCommentCount(Post post) {
+		postRepository.decreaseCommentCount(post);
+	}
+
 	public void delete(final Post post) {
 		postRepository.delete(post);
 	}

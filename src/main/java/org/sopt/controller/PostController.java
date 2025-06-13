@@ -55,9 +55,13 @@ public class PostController {
 	public ResponseEntity<ResponseDto<PostPreviewResponses>> getPosts(
 		@RequestParam(name = "keyword", required = false) final Optional<String> keyword,
 		@RequestParam(name = "target", defaultValue = DEFAULT_SEARCH_TARGET) final String target,
-		@RequestParam(name = "tag", required = false) final Optional<String> tag
+		@RequestParam(name = "tag", required = false) final Optional<Long> tagId,
+		@RequestParam(name = "page", defaultValue = "0") final int page,
+		@RequestParam(name = "size", defaultValue = "10") final int size,
+		@RequestHeader(name = "userId", required = false) Long userId
 	) {
-		PostPreviewResponses responses = postService.getPosts(keyword, target, tag);
+		PostPreviewResponses responses = postService.getPosts(Optional.ofNullable(userId), keyword, target, tagId, page,
+			size);
 		return new ResponseEntity<>(
 			ResponseDto.of(HttpStatus.OK, "post 목록 조회 성공", responses), HttpStatus.OK);
 	}

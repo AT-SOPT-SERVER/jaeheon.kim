@@ -1,16 +1,20 @@
 package org.sopt.service.post;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.sopt.domain.Post;
+import org.sopt.domain.Tag;
 import org.sopt.domain.User;
-import org.sopt.domain.enums.Tag;
 import org.sopt.dto.request.post.PostCreateRequest;
 import org.sopt.dto.request.post.PostUpdateRequest;
 import org.sopt.dto.response.post.PostPreviewResponses;
 import org.sopt.dto.response.post.PostResponse;
 import org.sopt.exception.ConflictException;
 import org.sopt.exception.errorcode.ErrorCode;
+import org.sopt.service.tag.TagReader;
+import org.sopt.service.tag.TagWriter;
 import org.sopt.service.user.UserReader;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -22,34 +26,47 @@ public class PostService {
 	private final PostReader postReader;
 	private final PostWriter postWriter;
 	private final UserReader userReader;
+	private final TagReader tagReader;
+	private final TagWriter tagWriter;
 
 	public PostService(
 		final PostWriter postWriter,
 		final PostReader postReader,
-		final UserReader userReader
+		final UserReader userReader, TagReader tagReader, TagWriter tagWriter
 	) {
 		this.postWriter = postWriter;
 		this.postReader = postReader;
 		this.userReader = userReader;
+		this.tagReader = tagReader;
+		this.tagWriter = tagWriter;
 	}
 
 	public PostResponse getPostById(final Long id) {
 		return postReader.getPost(id);
 	}
 
-	public PostPreviewResponses getPosts(final Optional<String> keyword,
+	public PostPreviewResponses getPosts(
+		final Optional<Long> userId,
+		final Optional<String> keyword,
 		final String target,
-		final Optional<String> tag) {
-		return postReader.getPosts(keyword, target, tag.map(Tag::resolveTag));
+		final Optional<Long> tagId,
+		int page,
+		int size) {
+		return postReader.getPosts(userId.map(userReader::findById),
+			keyword, target, tagId, page, size);
 	}
 
+	@Transactional
 	public void createPost(final Long userId, final PostCreateRequest request) {
 		User user = userReader.findById(userId);
-		postIntegrityRunnable(() -> postWriter.create(user,
+
+		Post post = postIntegritySupplier(() -> postWriter.create(user,
 			request.title(),
-			request.content(),
-			request.tag().map(Tag::resolveTag)
+			request.content()
 		));
+
+		List<Tag> tags = tagReader.findAllByIds(request.tagIds());
+		tagWriter.createPostTag(post, tags);
 	}
 
 	public void deletePostById(final Long postId, final Long userId) {
@@ -72,18 +89,17 @@ public class PostService {
 
 		requestUser.checkIsWriter(post.getUser(), ErrorCode.NOT_ALLOWED_POST);
 
-		postIntegrityRunnable(() -> postWriter.update(post, request));
+		postIntegritySupplier(() -> postWriter.update(post, request));
 	}
 
 	/**
 	 * 함수형 인터페이스를 사용하여 post 쓰기 작업 시 발생하는 무결성 오류를 처리함.
 	 * uk_title 인덱스로 title 관련 중복이 발생할 경우 이를 catch하여 사용자에게 POST_TITLE_CONFLICT 을 전달해줌
 	 *
-	 * @param runnable
 	 */
-	private void postIntegrityRunnable(Runnable runnable) {
+	private <T> T postIntegritySupplier(Supplier<T> supplier) {
 		try {
-			runnable.run();
+			return supplier.get();
 		} catch (DataIntegrityViolationException e) {
 			if (e.getMessage().contains("title")) {
 				throw new ConflictException(ErrorCode.POST_TITLE_CONFLICT);
