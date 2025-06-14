@@ -22,8 +22,9 @@ public class TagWriter {
 
 	@Transactional
 	public void createPostTag(Post post, List<Tag> tags) {
-		postTagRepository.saveAll(tags.stream()
+		List<PostTag> postTags = postTagRepository.saveAll(tags.stream()
 			.map(tag -> PostTag.create(post, tag))
 			.toList());
+		post.addPostTags(postTags);
 	}
 }
