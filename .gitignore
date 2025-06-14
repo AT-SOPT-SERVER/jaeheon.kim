@@ -49,3 +49,6 @@ application.yml
 
 backupcode/
 *.backup
+
+# Qclass
+/src/main/generated
