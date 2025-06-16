@@ -1,5 +1,7 @@
 package org.sopt.domain;
 
+import org.hibernate.Hibernate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +47,10 @@ public class PostTag {
 
 	public Tag getTag() {
 		return tag;
+	}
+
+	public boolean isTagProxy() {
+		return !Hibernate.isInitialized(tag);
 	}
 
 }

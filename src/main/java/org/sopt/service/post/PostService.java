@@ -1,5 +1,7 @@
 package org.sopt.service.post;
 
+import static org.sopt.constant.CacheConstant.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -16,6 +18,8 @@ import org.sopt.exception.errorcode.ErrorCode;
 import org.sopt.service.tag.TagReader;
 import org.sopt.service.tag.TagWriter;
 import org.sopt.service.user.UserReader;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +46,8 @@ public class PostService {
 	}
 
 	public PostResponse getPostById(final Long id) {
-		return postReader.getPost(id);
+		Post post = postReader.findByIdWithRelationInitialized(id);
+		return PostResponse.from(post);
 	}
 
 	public PostPreviewResponses getPosts(
@@ -57,7 +62,8 @@ public class PostService {
 	}
 
 	@Transactional
-	public void createPost(final Long userId, final PostCreateRequest request) {
+	@CachePut(cacheNames = POST_CACHE_NAME, key = "#post.id")
+	public Post createPost(final Long userId, final PostCreateRequest request) {
 		User user = userReader.findById(userId);
 
 		Post post = postIntegritySupplier(() -> postWriter.create(user,
@@ -67,8 +73,11 @@ public class PostService {
 
 		List<Tag> tags = tagReader.findAllByIds(request.tagIds());
 		tagWriter.createPostTag(post, tags);
+		return post;
 	}
 
+	@Transactional
+	@CacheEvict(cacheNames = POST_CACHE_NAME, key = POST_CACHE_KEY)
 	public void deletePostById(final Long postId, final Long userId) {
 		Post post = postReader.findById(postId);
 		User requestUser = userReader.findById(userId);
@@ -79,17 +88,18 @@ public class PostService {
 	}
 
 	@Transactional
-	public void updatePostById(
-		final Long id,
+	@CachePut(cacheNames = POST_CACHE_NAME, key = POST_CACHE_KEY)
+	public Post updatePostById(
+		final Long postId,
 		final PostUpdateRequest request,
 		final Long userId
 	) {
-		Post post = postReader.findById(id);
+		Post post = postReader.findById(postId);
 		User requestUser = userReader.findById(userId);
 
 		requestUser.checkIsWriter(post.getUser(), ErrorCode.NOT_ALLOWED_POST);
 
-		postIntegritySupplier(() -> postWriter.update(post, request));
+		return postIntegritySupplier(() -> postWriter.update(post, request));
 	}
 
 	/**

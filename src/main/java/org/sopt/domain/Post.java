@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.Hibernate;
 import org.sopt.domain.base.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -109,6 +110,17 @@ public class Post extends BaseEntity {
 
 	public void addPostTags(Collection<PostTag> postTags) {
 		this.postTags.addAll(postTags);
+	}
+
+	public boolean isRelatedEntityProxy() {
+		return !Hibernate.isInitialized(user)
+			|| !Hibernate.isInitialized(postTags)
+			|| isPostTagsTagProxy();
+	}
+
+	public boolean isPostTagsTagProxy() {
+		return postTags.stream()
+			.anyMatch(PostTag::isTagProxy);
 	}
 
 	@Override

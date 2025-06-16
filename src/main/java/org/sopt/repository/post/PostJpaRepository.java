@@ -3,17 +3,20 @@ package org.sopt.repository.post;
 import java.util.Optional;
 
 import org.sopt.domain.Post;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PostJpaRepository extends JpaRepository<Post, Long> {
+
+	@EntityGraph(attributePaths = {"postTags", "postTags.tag"})
 	@Query("select p " +
 		"from Post p " +
 		"inner join fetch p.user " +
 		"where p.id = :postId")
-	Optional<Post> findByIdWithUser(@Param("postId") Long postId);
+	Optional<Post> findByIdWithUserAndPostTags(@Param("postId") Long postId);
 
 	@Modifying
 	@Query("""
