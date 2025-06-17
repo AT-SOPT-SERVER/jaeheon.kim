@@ -9,6 +9,10 @@ public enum ErrorCode {
 	NOT_EXIST_CONTENT_TYPE("4004", "잘못된 컨텐츠 타입입니다."),
 	INVALID_POST_REQUEST("4005", "잘못된 POST 관련 요청입니다."),
 
+	INVALID_TOKEN("4010", "유효하지 않은 토큰입니다."),
+	EXPIRED_TOKEN("4011", "만료된 토큰입니다."),
+	UNSUPPORTED_TOKEN("4012", "지원하지 않는 토큰 타입입니다."),
+
 	NOT_ALLOWED_POST("4030", "해당 POST 에 대한 권한이 없습니다."),
 	NOT_ALLOWED_USER("4031", "해당 USER 에 대한 권한이 없습니다."),
 	NOT_ALLOWED_COMMENT("4032", "해당 COMMENT 에 대한 권한이 없습니다."),
