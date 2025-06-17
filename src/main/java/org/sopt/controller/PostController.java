@@ -4,6 +4,8 @@ import static org.sopt.constant.PostConstant.*;
 
 import java.util.Optional;
 
+import org.sopt.annotation.ValidCommentCreateRequest;
+import org.sopt.annotation.ValidCommentUpdateRequest;
 import org.sopt.annotation.ValidPostCreateRequest;
 import org.sopt.annotation.ValidPostUpdateRequest;
 import org.sopt.dto.ResponseDto;
@@ -92,7 +94,7 @@ public class PostController {
 	@PostMapping("/{post-id}/comments")
 	public ResponseEntity<ResponseDto<Void>> creatComment(
 		@PathVariable(name = "post-id") Long postId,
-		@RequestBody CommentCreateRequest request,
+		@RequestBody @ValidCommentCreateRequest CommentCreateRequest request,
 		@RequestHeader Long userId
 	) {
 		commentService.createPostComment(postId, userId, request);
@@ -103,7 +105,7 @@ public class PostController {
 	public ResponseEntity<ResponseDto<Void>> updateComment(
 		@PathVariable(name = "post-id") Long postId,
 		@PathVariable(name = "comment-id") Long commentId,
-		@RequestBody CommentUpdateRequest request,
+		@RequestBody @ValidCommentUpdateRequest CommentUpdateRequest request,
 		@RequestHeader(name = "userId") Long userId
 	) {
 		commentService.updatePostComment(commentId, postId, userId, request);
