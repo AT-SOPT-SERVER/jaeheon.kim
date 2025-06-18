@@ -1,5 +1,8 @@
 package org.sopt.domain;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 import org.hibernate.Hibernate;
 
 import jakarta.persistence.Entity;
@@ -11,7 +14,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class PostTag {
+public class PostTag implements Serializable {
+
+	@Serial
+	private final static long serialVersionUID = 2L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,7 +30,11 @@ import jakarta.persistence.Table;
 		@Index(name = "idx_created_at", columnList = "created_at")
 	}
 )
-public class Post extends BaseEntity {
+public class Post extends BaseEntity implements Serializable {
+
+	@Serial
+	private final static long serialVersionUID = 1L;
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post")
 	private final List<PostTag> postTags = new ArrayList<>();
 

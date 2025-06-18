@@ -1,5 +1,7 @@
 package org.sopt.domain;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.sopt.domain.base.BaseEntity;
@@ -15,7 +17,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Serializable {
+	@Serial
+	private final static long serialVersionUID = 4L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
