@@ -4,8 +4,10 @@ import static org.sopt.constant.CacheConstant.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.Tag;
 import org.sopt.domain.User;
@@ -15,12 +17,14 @@ import org.sopt.dto.response.post.PostPreviewResponses;
 import org.sopt.dto.response.post.PostResponse;
 import org.sopt.exception.ConflictException;
 import org.sopt.exception.errorcode.ErrorCode;
+import org.sopt.service.comment.CommentReader;
 import org.sopt.service.tag.TagReader;
 import org.sopt.service.tag.TagWriter;
 import org.sopt.service.user.UserReader;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,22 +36,33 @@ public class PostService {
 	private final UserReader userReader;
 	private final TagReader tagReader;
 	private final TagWriter tagWriter;
+	private final CommentReader commentReader;
+	private final ThreadPoolTaskExecutor taskExecutor;
 
 	public PostService(
-		final PostWriter postWriter,
-		final PostReader postReader,
-		final UserReader userReader, TagReader tagReader, TagWriter tagWriter
+		final PostReader postReader, final PostWriter postWriter,
+		final UserReader userReader,
+		final TagReader tagReader, final TagWriter tagWriter,
+		final CommentReader commentReader, ThreadPoolTaskExecutor taskExecutor
 	) {
 		this.postWriter = postWriter;
 		this.postReader = postReader;
 		this.userReader = userReader;
 		this.tagReader = tagReader;
 		this.tagWriter = tagWriter;
+		this.commentReader = commentReader;
+		this.taskExecutor = taskExecutor;
 	}
 
-	public PostResponse getPostById(final Long id) {
-		Post post = postReader.findByIdWithRelationInitialized(id);
-		return PostResponse.from(post);
+	public PostResponse getPostById(final Long postId) {
+		CompletableFuture<Post> postFuture = CompletableFuture.supplyAsync(
+			() -> postReader.findByIdWithRelationInitialized(postId), taskExecutor);
+		CompletableFuture<List<Comment>> commentsFuture = CompletableFuture.supplyAsync(
+			() -> commentReader.findAllByPostId(postId), taskExecutor);
+
+		return CompletableFuture.allOf(postFuture, commentsFuture)
+			.thenApply((nothing) -> PostResponse.from(postFuture.join(), commentsFuture.join()))
+			.join();
 	}
 
 	public PostPreviewResponses getPosts(

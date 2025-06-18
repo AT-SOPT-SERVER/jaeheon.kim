@@ -1,5 +1,7 @@
 package org.sopt.service.comment;
 
+import java.util.List;
+
 import org.sopt.domain.Comment;
 import org.sopt.exception.NotFoundException;
 import org.sopt.exception.errorcode.ErrorCode;
@@ -17,6 +19,10 @@ public class CommentReader {
 	public Comment findById(Long id) {
 		return commentRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+	}
+
+	public List<Comment> findAllByPostId(Long postId) {
+		return commentRepository.findAllByPostId(postId);
 	}
 
 }
