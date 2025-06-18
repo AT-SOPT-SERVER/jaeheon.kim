@@ -1,5 +1,7 @@
 package org.sopt.domain;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +26,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(
 	indexes = {
-		@Index(name = "uk_title", columnList = "title", unique = true)
+		@Index(name = "uk_title", columnList = "title", unique = true),
+		@Index(name = "idx_created_at", columnList = "created_at")
 	}
 )
 public class Post extends BaseEntity {
