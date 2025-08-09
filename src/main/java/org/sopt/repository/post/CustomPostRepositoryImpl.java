@@ -1,56 +1,99 @@
 package org.sopt.repository.post;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import org.sopt.domain.Post;
-import org.sopt.domain.enums.Tag;
+import static org.sopt.domain.QLike.*;
+import static org.sopt.domain.QPost.*;
+import static org.sopt.domain.QPostTag.*;
+import static org.sopt.domain.QTag.*;
+import static org.sopt.domain.QUser.*;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.sopt.constant.JpqlConstant.*;
+import org.sopt.domain.User;
+import org.sopt.domain.enums.ContentType;
+import org.sopt.dto.response.post.PostPreviewResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 
-    private final EntityManager entityManager;
+	private final DynamicQueryProvider dynamicQueryProvider;
+	private final JPAQueryFactory jpaQueryFactory;
 
-    public CustomPostRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+	public CustomPostRepositoryImpl(DynamicQueryProvider dynamicQueryProvider, JPAQueryFactory jpaQueryFactory) {
+		this.dynamicQueryProvider = dynamicQueryProvider;
+		this.jpaQueryFactory = jpaQueryFactory;
+	}
 
-    @Override
-    public List<Post> searchPosts(Optional<String> keyword, String target, Optional<Tag> tag) {
-        StringBuilder dynamicQuery = new StringBuilder(
-                """
-                        select p
-                        from Post p
-                        inner join fetch p.user u
-                        where 1=1
-                        """);
+	@Override
+	public Page<PostPreviewResponse> searchPosts(
+		Optional<String> keyword,
+		String target,
+		Optional<Long> tagId,
+		int page,
+		int size,
+		Optional<User> requestUser
+	) {
+		BooleanExpression whereCondition = Expressions.allOf(
+			dynamicQueryProvider.searchByKeyword(keyword, target),
+			dynamicQueryProvider.searchByTagId(tagId)
+		);
 
-        if (keyword.isPresent()) {
-            if (target.equals("writer")) {
-                dynamicQuery.append(AND)
-                        .append("u.name").append(LIKE).append(likePattern(keyword.get()));
-            }
-            if (target.equals("title")) {
-                dynamicQuery.append(AND)
-                        .append("p.title").append(LIKE).append(likePattern(keyword.get()));
-            }
-        }
+		JPAQuery<PostPreviewResponse> query = getSearchPostsQueryWithJoin(requestUser);
+		List<PostPreviewResponse> postPreviewResponses = getSearchPostsPreviews(query, whereCondition, page, size);
 
-        tag.ifPresent((t) -> dynamicQuery.append(AND)
-                .append("p.tag = ").append(t));
+		long count = getSearchPostsCount(whereCondition);
+		return new PageImpl<>(postPreviewResponses, PageRequest.of(page, size), count);
+	}
 
-        dynamicQuery.append(NEW_LINE)
-                .append(ORDER_BY).append("p.createdAt").append(DESC);
+	private long getSearchPostsCount(BooleanExpression whereCondition) {
+		return jpaQueryFactory
+			.select(post.count())
+			.from(post)
+			.leftJoin(postTag).on(postTag.post.eq(post))
+			.where(whereCondition)
+			.fetchOne();
+	}
 
-        Query query = entityManager.createQuery(dynamicQuery.toString());
-        return query.getResultList();
-    }
+	private JPAQuery<PostPreviewResponse> getSearchPostsQueryWithJoin(Optional<User> requestUser) {
+		JPAQuery<PostPreviewResponse> query = jpaQueryFactory
+			.selectDistinct(Projections.constructor(
+				PostPreviewResponse.class,
+				post,
+				requestUser.isPresent() ? like.isNotNull() : Expressions.FALSE))
+			.from(post)
+			.leftJoin(postTag).on(postTag.post.eq(post)).fetchJoin()
+			.leftJoin(tag).on(postTag.tag.eq(tag)).fetchJoin()
+			.innerJoin(user).on(post.user.eq(user)).fetchJoin();
 
-    private String likePattern(String keyword) {
-        return "'%" + keyword + "%'";
-    }
+		requestUser.ifPresent(u -> {
+			query.leftJoin(like).on(like.id.contentId.eq(post.id)
+				.and(like.id.contentType.eq(ContentType.POST))
+				.and(like.id.userId.eq(u.getId())));
+		});
+
+		return query;
+	}
+
+	public List<PostPreviewResponse> getSearchPostsPreviews(
+		JPAQuery<PostPreviewResponse> query,
+		BooleanExpression whereCondition,
+		int page,
+		int size
+	) {
+		return query
+			.where(whereCondition)
+			.orderBy(post.createdAt.desc())
+			.limit(size)
+			.offset((long)size * page)
+			.fetch();
+	}
 
 }

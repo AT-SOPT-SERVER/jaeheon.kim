@@ -1,70 +1,148 @@
 package org.sopt.domain;
 
-import jakarta.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import org.hibernate.Hibernate;
 import org.sopt.domain.base.BaseEntity;
-import org.sopt.domain.enums.Tag;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(
-        indexes = {
-                @Index(name = "uk_title", columnList = "title", unique = true)
-        }
+	indexes = {
+		@Index(name = "uk_title", columnList = "title", unique = true),
+		@Index(name = "idx_created_at", columnList = "created_at")
+	}
 )
+public class Post extends BaseEntity implements Serializable {
 
-public class Post extends BaseEntity {
+	@Serial
+	private final static long serialVersionUID = 1L;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post")
+	private final List<PostTag> postTags = new ArrayList<>();
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    @Column(nullable = false, unique = true)
-    private String title;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(length = 1000, nullable = false)
-    private String content;
+	@Column(nullable = false, unique = true)
+	private String title;
 
-    @Enumerated(EnumType.STRING)
-    private Tag tag;
+	@Column(length = 1000, nullable = false)
+	private String content;
 
-    public Post(User user, String title, String content, Tag tag) {
-        this.user = user;
-        this.title = title;
-        this.content = content;
-        this.tag = tag;
-    }
+	private int likeCount = 0;
 
-    protected Post() {
-    }
+	private int commentCount = 0;
 
-    public Long getId() {
-        return this.id;
-    }
+	private Post(User user, String title, String content, Integer likeCount, Integer commentCount) {
+		this.user = user;
+		this.title = title;
+		this.content = content;
+		this.likeCount = likeCount;
+		this.commentCount = commentCount;
+	}
 
-    public String getTitle() {
-        return this.title;
-    }
+	protected Post() {
+	}
 
-    public User getUser() {
-        return user;
-    }
+	public static Post createNew(User user, String title, String content) {
+		return new Post(user, title, content, 0, 0);
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public void increaseLikeCount() {
+		this.likeCount++;
+	}
 
-    public Tag getTag() {
-        return tag;
-    }
+	public void increaseCommentCount() {
+		this.commentCount++;
+	}
 
-    public void updateTitle(String newTitle) {
-        this.title = newTitle;
-    }
+	public List<PostTag> getPostTags() {
+		return postTags;
+	}
 
-    public void updateContent(String newContent) {
-        this.content = content;
-    }
+	public Long getId() {
+		return this.id;
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public int getCommentCount() {
+		return commentCount;
+	}
+
+	public void updateTitle(String newTitle) {
+		this.title = newTitle;
+	}
+
+	public void updateContent(String newContent) {
+		this.content = newContent;
+	}
+
+	public void addPostTags(Collection<PostTag> postTags) {
+		this.postTags.addAll(postTags);
+	}
+
+	public boolean isRelatedEntityProxy() {
+		return !Hibernate.isInitialized(user)
+			|| !Hibernate.isInitialized(postTags)
+			|| isPostTagsTagProxy();
+	}
+
+	public boolean isPostTagsTagProxy() {
+		return postTags.stream()
+			.anyMatch(PostTag::isTagProxy);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Post that)) {
+			return false;
+		}
+		return Objects.equals(this.getId(), that.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getId());
+	}
 }
